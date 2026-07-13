@@ -1,0 +1,16 @@
+* text=auto
+*.bat text eol=crlf
+*.sh text eol=lf
+*.command text eol=lf
+
+/.gitattributes export-ignore
+/.gitignore export-ignore
+/.agents/ export-ignore
+/tests/ export-ignore
+/docs/superpowers/ export-ignore
+/animation_plan.md export-ignore
+/current_implementation_slices.md export-ignore
+/sound_music_plan.md export-ignore
+
+# Older implementation plans use Markdown's two-space hard line breaks.
+/docs/superpowers/plans/2026-06-27-*.md whitespace=-trailing-space
