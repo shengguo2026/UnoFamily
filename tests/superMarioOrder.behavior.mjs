@@ -1,0 +1,66 @@
+import assert from 'node:assert/strict'
+import { readFileSync } from 'node:fs'
+
+const appSource = readFileSync(new URL('../src/App.tsx', import.meta.url), 'utf8')
+
+const playableBlock = appSource.match(/const playableGames:[\s\S]*?\n}/)?.[0] ?? ''
+const playableGames = [...playableBlock.matchAll(/:\s*'([^']+)'/g)].map((match) => match[1])
+
+const gamesBlock = appSource.match(/const games = \[[\s\S]*?\n\]/)?.[0] ?? ''
+const gameTitles = [...gamesBlock.matchAll(/'([^']+)'/g)].map((match) => match[1])
+
+const marioKartIndex = playableGames.indexOf('marioKart')
+const superMarioIndex = playableGames.indexOf('superMario')
+const sonicIndex = playableGames.indexOf('sonic')
+const barbieIndex = playableGames.indexOf('barbie')
+const motuIndex = playableGames.indexOf('motu')
+const tmntIndex = playableGames.indexOf('tmnt')
+const spiderManIndex = playableGames.indexOf('spiderman')
+const dcIndex = playableGames.indexOf('dc')
+const starTrekIndex = playableGames.indexOf('starTrek')
+const avatarIndex = playableGames.indexOf('avatar')
+const monsterHighIndex = playableGames.indexOf('monsterHigh')
+const nflIndex = playableGames.indexOf('nfl')
+const skyjoIndex = playableGames.indexOf('skyjo')
+
+assert.equal(superMarioIndex, marioKartIndex + 1, 'UNO Super Mario should appear immediately after UNO Mario Kart')
+assert.equal(sonicIndex, superMarioIndex + 1, 'UNO Sonic should appear immediately after UNO Super Mario')
+assert.equal(barbieIndex, sonicIndex + 1, 'UNO Barbie should appear immediately after UNO Sonic')
+assert.equal(motuIndex, barbieIndex + 1, 'UNO Masters of the Universe should appear immediately after UNO Barbie')
+assert.equal(tmntIndex, motuIndex + 1, 'UNO TMNT should appear immediately after UNO Masters of the Universe')
+assert.equal(spiderManIndex, tmntIndex + 1, 'UNO Spider-Man should appear immediately after UNO TMNT')
+assert.equal(dcIndex, spiderManIndex + 1, 'UNO DC should appear immediately after UNO Spider-Man')
+assert.equal(starTrekIndex, dcIndex + 1, 'UNO Star Trek should appear immediately after UNO DC')
+assert.equal(avatarIndex, starTrekIndex + 1, 'UNO Avatar should appear immediately after UNO Star Trek')
+assert.equal(monsterHighIndex, avatarIndex + 1, 'UNO Monster High should appear immediately after UNO Avatar')
+assert.equal(nflIndex, monsterHighIndex + 1, 'UNO NFL should appear immediately after UNO Monster High')
+assert.equal(skyjoIndex, nflIndex + 1, 'Skyjo should appear immediately after UNO NFL')
+
+const marioKartTitleIndex = gameTitles.indexOf('UNO Mario Kart')
+const superMarioTitleIndex = gameTitles.indexOf('UNO Super Mario')
+const sonicTitleIndex = gameTitles.indexOf('UNO Sonic the Hedgehog')
+const barbieTitleIndex = gameTitles.indexOf('UNO Barbie')
+const motuTitleIndex = gameTitles.indexOf('UNO Masters of the Universe')
+const tmntTitleIndex = gameTitles.indexOf('UNO TMNT')
+const spiderManTitleIndex = gameTitles.indexOf('UNO Spider-Man')
+const dcTitleIndex = gameTitles.indexOf('UNO DC')
+const starTrekTitleIndex = gameTitles.indexOf('UNO Star Trek')
+const avatarTitleIndex = gameTitles.indexOf('UNO Avatar')
+const monsterHighTitleIndex = gameTitles.indexOf('UNO Monster High')
+const nflTitleIndex = gameTitles.indexOf('UNO NFL')
+const skyjoTitleIndex = gameTitles.indexOf('Skyjo')
+
+assert.equal(superMarioTitleIndex, marioKartTitleIndex + 1, 'UNO Super Mario title should appear immediately after UNO Mario Kart')
+assert.equal(sonicTitleIndex, superMarioTitleIndex + 1, 'UNO Sonic title should appear immediately after UNO Super Mario')
+assert.equal(barbieTitleIndex, sonicTitleIndex + 1, 'UNO Barbie title should appear immediately after UNO Sonic')
+assert.equal(motuTitleIndex, barbieTitleIndex + 1, 'UNO Masters of the Universe title should appear immediately after UNO Barbie')
+assert.equal(tmntTitleIndex, motuTitleIndex + 1, 'UNO TMNT title should appear immediately after UNO Masters of the Universe')
+assert.equal(spiderManTitleIndex, tmntTitleIndex + 1, 'UNO Spider-Man title should appear immediately after UNO TMNT')
+assert.equal(dcTitleIndex, spiderManTitleIndex + 1, 'UNO DC title should appear immediately after UNO Spider-Man')
+assert.equal(starTrekTitleIndex, dcTitleIndex + 1, 'UNO Star Trek title should appear immediately after UNO DC')
+assert.equal(avatarTitleIndex, starTrekTitleIndex + 1, 'UNO Avatar title should appear immediately after UNO Star Trek')
+assert.equal(monsterHighTitleIndex, avatarTitleIndex + 1, 'UNO Monster High title should appear immediately after UNO Avatar')
+assert.equal(nflTitleIndex, monsterHighTitleIndex + 1, 'UNO NFL title should appear immediately after UNO Monster High')
+assert.equal(skyjoTitleIndex, nflTitleIndex + 1, 'Skyjo title should appear immediately after UNO NFL')
+
+console.log('UNO Super Mario order test passed')

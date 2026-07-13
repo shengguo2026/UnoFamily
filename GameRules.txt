@@ -1,0 +1,908 @@
+Game 1: Uno Classic:
+
+The official goal of classic UNO is to be the first player to discard all cards from your hand. You score points in each round based on the cards left in your opponents' hands, and the first player to reach 500 points wins the overall game.
+
+Game Setup
+Players: Designed for 2 to 10 players, ages 7 and up.
+Deal: Shuffle the deck and deal exactly 7 cards face down to each player.
+Draw Pile: Place the remaining cards face down in the center to form the Draw Pile.
+Discard Pile: Flip the top card of the Draw Pile face up next to it to start the Discard Pile.
+
+Standard Gameplay: The player to the left of the dealer starts, and play initially moves clockwise. On your turn, you must match the top card of the Discard Pile using one of these criteria: Color: Play a card of the same color. Number: Play a card with the same number. Symbol: Play an Action card matching the symbol (e.g., a Skip card on a Skip card). Wild Card: Play any Wild card from your hand to change the color.
+
+If you cannot or choose not to play a matching card, you must draw one card from the Draw Pile. If the drawn card is playable, you may play it immediately; otherwise, your turn ends and play passes to the next person.
+
+Action Cards & Special Moves: When played, these cards trigger immediate gameplay mechanics: Skip: The next player in sequence loses their turn. Reverse: Reverses the direction of play (clockwise becomes counterclockwise, or vice versa). Draw Two (+2): The next player must draw 2 cards and skip their turn. (Note: Mattel's official rules state that stacking +2 or +4 cards is illegal; you cannot pass the penalty to the next player). Wild: Allows you to choose the active color in play. Can be played on any card. Wild Draw Four (+4): Allows you to choose the active color, and forces the next player to draw 4 cards and skip their turn. Crucial Rule: You can only play this legally if you do not have any cards in your hand that match the current color. Challenging a +4: If the penalized player suspects you played this illegally (i.e., you held a matching color), they can challenge you. You must show them your hand. If guilty, you draw the 4 cards. If innocent, the challenger draws 6 cards instead.
+
+Calling "UNO!" and Winning: The "UNO" Shout: The moment you have only 1 card left in your hand, you must loudly yell "UNO!". The Penalty: If you forget to say "UNO" and another player catches you before the next person starts their turn, you must draw 2 penalty cards. Ending a Round: The round ends when a player successfully places their final card.
+
+Point Scoring System: The winner of the round collects points for all cards left in their opponents' hands: Numbered cards (0-9): Face value. Draw Two / Skip / Reverse: 20 points each. Wild / Wild Draw Four: 50 points each.
+
+
+Uno Classic Add-ons:
+
+1. The Reverse Pack
+The Reverse Pack focuses entirely on changing the direction of play while introducing severe penalties and defensive blocks.
+Wild No U: Blocks an incoming draw penalty (like a Draw 2 or Draw 4) and throws the penalty right back at the player who targeted you.
+Reverse Draw 2: Changes the current direction of play and immediately forces the next player in that new direction to draw 2 cards.
+Reverse Skip: Changes the direction of play and immediately skips the next player in that new direction.
+Wild Power Reverse: Reverses the direction of play, lets you choose the active color, and grants you an immediate extra turn.
+
+2. The Stack Pack
+The Stack Pack introduces the highly requested, chaotic mechanic of "stacking" draw penalties, which is famously illegal in classic rules.
+Stackable Penalties: It introduces special draw cards (like Wild Draw 3 and mystery Wild Draw ? cards) that can explicitly be played on top of other draw cards.
+Passing the Pain: If someone plays a draw card against you, you can play a card from this pack to save yourself and pass an even larger, cumulative card penalty to the next player.
+
+3. The Speed Pack
+The Speed Pack focuses on accelerating the game by forcing players to dump multiple cards at once or make split-second decisions.
+Wild Speed Play: Play this card, name a color, and immediately play a second card of that chosen color from your hand.
+Wild Draw 1 Speed Play: Forces the next player to draw one card, and you immediately get to play another card from your hand.
+Speed Match: Allows you to immediately discard any and all cards from your hand that perfectly match the current top card's color or number.
+Wild Lightning Round: Every player must immediately discard one card of the chosen color from their hand. Anyone who cannot must draw two cards.
+
+4. The Swap Pack
+The Swap Pack introduces high-stakes chaos by forcing players to trade hands, completely disrupting anyone close to winning.
+Wild Swap Hands: Choose any opponent and completely swap your entire hand of cards with theirs.
+Targeted Swap: Forces two other players to swap hands with each other, allowing you to disrupt the leader without affecting your own hand.
+Passing Swap: Every player passes their entire hand to the person sitting next to them in the current direction of play.
+Wild Draw 2 Swap: Forces the next player to draw two cards, and then you swap hands with any player of your choice.
+
+Card Counts Per Add-On Pack
+Every official UNO Add-On Pack contains exactly 16 cards. If you acquire all four packs (Reverse, Stack, Speed, and Swap), you add a total of 64 specialized cards to your collection.
+
+How to Mix Multiple Packs
+Mattel's official rule structure allows you to customize the level of chaos by mixing the packs however you like:
+The Golden Rule: You cannot play an add-on pack by itself. It must be shuffled into a standard 112-card base UNO deck.
+Single-Pack Play: Simply shuffle one 16-card pack into your standard deck (making a 128-card deck).
+The "Mega-Deck" (Multi-Pack): You can shuffle two, three, or all four packs into a single base deck at the same time.
+Rule Interaction: When mixing packs, the rules of all included packs are active simultaneously. For example, if you mix the Stack Pack and the Reverse Pack, you can legally use a Reverse Draw 2 card to "stack" on top of a standard Draw 2, combining both mechanics.
+
+Official Scoring Adjustments
+When a round ends, the player who discarded all their cards earns points from the cards left in their opponents' hands. According to Mattel's standardized scoring architecture for modern expansion cards, the add-on cards are valued based on their background type:
+Colored Action Cards: 20 Points each, Examples: Stack 1, Stack 2, Reverse Skip, Reverse Draw 2
+Wild Cards (Four-color background): 50 Points each, Examples: Wild No U, Wild Swap Hands, Wild Stack 3, Wild Speed Play
+Note on Variable Cards: For special cards like the Wild Stack Number (which forces you to flip the draw pile to find a random penalty value), the card itself still counts as a flat 50 points if caught in your hand at the end of a round because it is structurally a Wild card.
+The first player to accumulate 500 points across multiple rounds wins the entire game.
+
+
+
+
+Game 2: Uno Extreme
+
+UNO Extreme (also known as UNO Attack! in some regions) replaces the traditional draw pile with a motorized card launcher. Instead of drawing a set number of cards when you cannot play, you press a button on the launcher and pray it doesn't shoot a barrage of cards at you.
+
+Game Setup & The Launcher
+Players: 2 to 10 players.
+The Deal: Deal 7 cards face down to each player.
+The Setup: Open the launcher compartment, place the remaining deck face down inside, and close it. Turn the launcher so it faces the active player during their turn.
+Starting: Flip the top card of the deck onto the table to form the Discard Pile.
+
+Core Gameplay Twist
+On your turn, you must match the top card of the Discard Pile by Color, Number, or Symbol.
+If you cannot play a card, you do not draw one card. Instead, you must press the Launcher button once. If nothing happens: You are safe, and your turn ends. If it streams cards out: You must take all cards that shot out of the launcher and add them to your hand. Your turn then ends. Note: If any cards are left sticking halfway out of the launcher after a burst, the active player must take those as well.
+
+Special Action Cards
+UNO Extreme completely removes standard "+2" and "+4" cards, replacing them with launcher-activated penalties:
+Hit 2: The next player must press the Launcher button twice. They cannot play a card, and their turn ends immediately after pressing.
+Discard All: Play this to instantly discard every card in your hand that matches the color of the Discard All card. Put them in a stack with the Discard All card on top.
+Wild Extreme Hit: The person who plays this chooses a color and targets any opponent. Pivot the launcher face-to-face with that chosen opponent; they must press the launcher button twice.
+Wild Hit-Fire (Featured in some editions): The next player must continuously press the launcher button until it successfully fires cards at them.
+Wild All Hit (Featured in some editions): Everyone except the person who played it must press the launcher button once.
+Trade Hands (Featured in some editions): Forces you to completely swap your entire hand of cards with an opponent of your choice.
+Skip & Reverse: Functions exactly like classic UNO, but in a 2-player game, playing a Reverse acts exactly like a Skip (giving you another immediate turn).
+
+Going Out & Yelling "UNO!"
+The moment you downsize to 1 card, you must yell "UNO!".
+If you are caught by an opponent before the next player begins their turn (defined as playing a card or pressing the button), you suffer a penalty.
+The Extreme Penalty: Instead of drawing two cards, you must press the launcher button twice.
+
+Point Scoring System
+The round ends when someone successfully discards their last card. The winner scores points for all cards remaining in the opponents' hands:
+Numbered Cards (0-9): Face Value
+Skip / Reverse / Hit 2: 20 Points each
+Discard All: 30 Points
+Wild / Wild Extreme Hit: 50 Points each
+The first player to reach 500 points wins the overall game.
+
+
+
+
+Game 3: Uno Flash
+UNO Flash is a high-speed variant of the classic card game that introduces a motorized electronic timer unit. Instead of taking turns in a predictable circle, the electronic unit randomly selects whose turn it is next and forces players to act before an audible countdown timer runs out.
+
+Game Setup & The Electronic Unit
+Players: 2 to 10 players.
+Set the Timer Speed: Locate the speed switch on the bottom of the electronic unit. Choose your time limit per turn: 4 seconds, 6 seconds, or Unlimited.
+The Deal: Shuffle the deck and deal 7 cards face down to each player.
+Piles: Place the remaining deck face down into one tray of the unit to form the Draw Pile. Flip the top card into the opposite tray to start the Discard Pile.
+Player Registration: Turn the unit on. Every player must immediately press the large Player Button directly in front of them. The unit logs these buttons into the active gameplay sequence.
+Start: Press the center Play/Pause button to begin the game.
+
+Fast-Paced Gameplay Mechanics
+The electronic unit controls the pacing. You do not simply wait for the person to your right or left.
+1. The Light Alerts You: Watch the console. When your designated Player Button lights up, it is officially your turn and your countdown timer begins ticking.
+2. Play or Draw: You must instantly match the top card of the Discard Pile by color, number, or symbol. If you cannot play (or choose not to), you must draw a card from the Draw Pile. If that drawn card is playable, you can discard it immediately.
+3. Hit Your Button: The exact moment you finish discarding or drawing, you must press your Player Button to pause your timer and pass the round.
+4. The Random Shift: The console will instantly light up another player's button at random—it could even light up your own button again for consecutive turns.
+5. The Time Penalty: If you fail to play a card and press your button before your 4 or 6-second timer expires, the alarm will sound and your button will flash. You forfeit your chance to play a card, must draw 2 penalty cards, and then hit your flashing button to resume the game.
+
+Special Action Cards
+While standard Skip, Reverse, Draw 2, and Wild cards exist, they are dictated entirely by the machine:
+Skip / Reverse / Draw 2 / Wild Draw 4: These actions always target the next player whose button lights up on the console. For example, if you play a Draw 2, hit your button. Whoever the machine randomly selects next must instantly draw 2 cards before they are allowed to take their regular turn.
+The SLAP Card (Exclusive to UNO Flash): When you play this card, do not press your player button. Instead, you must slam down on the large, centralized SLAP Button on the unit. The device immediately goes into "Slap Mode," forcing all of your opponents to rapidly hit their own individual Player Buttons. The last player to slap their button will be indicated by a flashing light and must draw 2 penalty cards.
+
+Yelling "UNO!"
+When down to your last 1 card, you must still shout "UNO!". If an opponent catches you forgetting to say it before the next player takes action, you must press your button and draw a 2-card penalty.
+
+Points and Scoring
+The round ends when a player completely empties their hand. The winner scores points based on the cards remaining in all opponents' hands:
+Numbered Cards (0-9): Face Value
+Skip / Reverse / Draw 2 / SLAP Card: 20 Points each
+Wild / Wild Draw 4: 50 Points each
+The first player to accumulate 500 total points across multiple rounds wins the game.
+
+
+
+
+Game 4: Uno Flip
+UNO Flip! is a dynamic variation of the classic game featuring double-sided cards with a "Light Side" and a "Dark Side." The game starts on the Light Side, which plays like traditional UNO, but playing a special "Flip" card instantly forces everyone to flip their hand, the draw pile, and the discard pile to the Dark Side, which features much harsher penalties.
+
+Game Setup
+Players: 2 to 10 players, ages 7 and up.
+The Deck: Cards have a white border on the Light Side and a black border on the Dark Side.
+The Deal: Deal 7 cards to each player. Hold your cards so the Light Side faces you and the Dark Side faces your opponents.
+Piles: Place the remaining deck in the center to form the Draw Pile with the Light Side facing down (so the Dark Side is visible on top). Flip the top card onto the Discard Pile with the Light Side facing up.
+Starting: Play begins on the Light Side and moves clockwise, starting to the left of the dealer.
+
+The Light Side (Standard Rules)
+On your turn, match the top card of the Discard Pile by Color, Number, or Symbol. If you cannot play, draw one card. If playable, you may drop it; otherwise, pass.
+Special Light Side Action Cards include:
+Draw One (+1): The next player draws 1 card and loses their turn.
+Skip: The next player loses their turn.
+Reverse: Reverses the direction of play.
+Wild: Choose the active color.
+Wild Draw Two (+2): Choose the active color; the next player draws 2 cards and loses their turn. (Can only be played if you do not have a matching color).
+Flip Card: Crucial Mechanic. When played, every player must flip their hand over. The Draw Pile and Discard Pile are also flipped over completely. Play now officially shifts to the Dark Side.
+
+The Dark Side (Ruthless Rules)
+When the game flips to the Dark Side, you must now match the colors, numbers, and symbols shown on the dark, black-bordered side of the cards. The colors change from the standard palette to Teal, Pink, Purple, and Orange.
+The action penalties become significantly more severe:
+Draw Five (+5): The next player must draw 5 cards and lose their turn.
+Skip Everyone: Instantly skips every single player. The turn goes right back to the person who played it.
+Reverse: Reverses the direction of play.
+Wild: Choose the active Dark Side color.
+Wild Draw Color: The ultimate penalty. Choose a color. The next player must continuously draw cards from the Draw Pile until they pull the color you named. They also lose their turn.
+Flip Card: Flipping a Dark Side "Flip" card reverses everything back. All hands, the draw pile, and the discard pile turn over to resume play on the Light Side.
+
+Yelling "UNO!" and Winning
+When down to your last 1 card, you must shout "UNO!" based on whichever side of the card is currently facing you.
+If you are caught forgetting to say it before the next player takes their turn, you must draw 2 penalty cards from the Draw Pile.
+The round ends immediately when a player discards their final card.
+
+Point Scoring System
+The winner of the round scores points for all cards remaining in their opponents' hands, regardless of which side the game ended on:
+Numbered Cards (0-9): Face Value
+Draw One (+1): 10 Points
+Draw Five (+5) / Skip / Reverse / Flip: 20 Points each
+Skip Everyone: 30 Points
+Wild: 40 Points
+Wild Draw Two (+2): 50 Points
+Wild Draw Color: 60 Points
+The first player to reach 500 total points across multiple rounds wins the entire game.
+
+
+
+
+Game 5: Uno H2O
+UNO H2O (also sold as UNO H2O To Go or UNO Splash) is an outdoor-friendly, travel-ready version of the classic card game. It features translucent, completely waterproof plastic cards and a specialized plastic carrying clip. While the core game plays like standard UNO, it introduces unique "Watermark" action cards that penalize every other player at the table simultaneously.
+
+Game Setup
+Players: 2 to 10 players, ages 7 and up.
+The Deal: Deal 7 waterproof cards face down to each player. Players hold cards normally, but the see-through nature of the plastic ensures opponents still cannot see the face of your cards from behind.
+Piles: Place the remaining deck face down to form the Draw Pile. Flip the top card face up next to it to start the Discard Pile.
+Start: The player to the left of the dealer goes first, and play initially moves clockwise.
+
+The Exclusive H2O Action Cards
+UNO H2O retains classic Skip, Reverse, and Draw Two cards, but replaces standard Wild cards with thematic "Watermark" variants that target the entire table:
+Wild Downpour Draw 1: When you play this card, you choose the active color. Additionally, every other player at the table must immediately draw 1 card from the Draw pile. Your turn ends, and the next player proceeds normally.
+Wild Downpour Draw 2: This operates as a major penalty. You change the current active color, and every other player at the table must immediately draw 2 cards into their hand.
+(Note: Standard Wild and Wild Draw 4 cards are still included in some specific H2O prints, but the Downpour cards are the defining gameplay addition to this edition)
+
+Standard Gameplay Rules
+On your turn, you must match the top card of the Discard Pile by Color, Number, or Symbol.
+If you do not have a matching card, you must take one card from the Draw Pile.
+If the drawn card is playable, you can place it down immediately. If it is not, your turn ends and play moves to the next person.
+
+Yelling "UNO!"
+The moment you have only 1 card left in your hand, you must loudly yell "UNO!".
+If you fail to shout it and another player catches you before the next player begins their turn, you suffer a penalty and must draw 2 cards.
+
+Points and Scoring
+The round ends the moment a player successfully discards their final card. The winner of that round scores points for all cards left in their opponents' hands:
+Numbered Cards (0-9): Face Value
+Skip / Reverse / Draw Two: 20 Points each
+Wild Downpour Draw 1: 50 Points
+Wild Downpour Draw 2 / Wild Draw 4: 50 Points each
+The first player to accumulate 500 total points across multiple rounds wins the entire game.
+
+Variation: The "H2O Splash" Spin-off
+If your version of the game came packaged with a physical, mechanical Whirlpool accessory (a plastic unit resembling a Magic 8-Ball), you own UNO H2O Splash.
+In that version, playing a 0, 2, or a special Splash Card forces the next player to physically shake the Whirlpool accessory.
+They must then execute whatever text command floats to the top of the bubble (such as Wipeout, Wave Left, or Draw H2O).
+
+In UNO H2O Splash, the centerpiece of the game is the mechanical, liquid-filled Whirlpool device (which operates similarly to a Magic 8-Ball).
+
+How the Whirlpool is Triggered
+Unlike versions where you only spin on action cards, the Whirlpool is highly active. According to the official Mattel instructions, it is triggered whenever a player places down:
+Any Wild Splash Card
+Any standard "0" Card
+Any standard "2" Card
+(Note: The 0 or 2 cards must still legally match the color or number on the discard pile to be played).
+When one of these cards is dropped, the next player in the current direction of play must physically pick up the Whirlpool accessory, shake it, and immediately execute the command that floats to the surface window.
+
+The Official Whirlpool Commands
+There are 8 unique commands that can appear inside the Whirlpool bubble:
+Draw H2O: The penalized player must continuously draw cards from the Draw Pile one by one until they successfully pull either a Blue card, a "2" card, a "0" card, or a Wild card.
+Wipeout: The turn order is immediately reversed. Furthermore, the player who originally threw down the trigger card loses their immunity and must shake the Whirlpool device instead.
+Wave Left: The shaking player must choose one card from their hand and show it exclusively to the player sitting on their left.
+Wave Right: The shaking player must choose one card from their hand and show it exclusively to the player sitting on their right.
+Give 1: The shaking player selects any single card from their own hand and forces any opponent of their choice to add it to theirs.
+Discard 2: The shaking player is allowed to immediately discard any two cards from their hand directly into the discard pile.
+Draw 2: The shaking player must immediately draw 2 cards from the Draw Pile.
+Draw 3: The shaking player must immediately draw 3 cards from the Draw Pile.
+
+Important Rule Changes for the Splash Edition
+Because the Whirlpool can radically alter hand sizes in a single turn, Mattel fundamentally changed how you win the game in this specific version:
+No Point Scoring: Traditional point values for cards left in hand are completely discarded.
+How to Win: The round ends normally when a player discards their last card. That player simply receives 1 point (or "one win") for the hand. The first person to successfully win 3 hands wins the overall game.
+Wild Draw 4 Freedom: In standard UNO, you can face a challenge if you play a Wild Draw 4 while holding a matching color. In the Splash edition, this restriction is removed—you can play a Wild Draw 4 at any time without penalty.
+
+
+
+
+Game 6: Uno Spin
+UNO Spin combines classic UNO card matching with a mechanical Spin Wheel that can completely alter players' hands in a single turn. The defining mechanic centers around Spin Cards—special numbered cards featuring a swirling "thumbprint" pattern.
+
+Game Setup
+Players: 2 to 10 players, ages 7 and up.
+The Wheel: Place the mechanical UNO Spin Wheel in the center of the table where all players can easily reach it.
+The Deal: Shuffle the deck and deal 7 cards face down to each player.
+Piles: Place the remaining deck face down on one side of the wheel's center tray to form the Draw Pile. Flip the top card face up into the opposite side of the center tray to start the Discard Pile.
+Start: The player to the left of the dealer goes first, and play moves clockwise.
+
+The Spin Card Mechanic
+The deck contains 20 Spin Cards (numbers 1 through 5 in all four colors, marked with a swirl pattern).
+You play a Spin Card just like a standard number card (matching by color or number).
+The Twist: The exact moment you place a Spin Card on the discard pile, the very next player in turn order cannot play a card from their hand. Instead, they must immediately spin the wheel and resolve whichever icon the arrow lands on. Spinning takes the place of their entire turn.
+
+The 9 Wheel Actions Explained
+When a player spins the wheel, they must execute one of these 9 potential outcomes:
+Almost UNO: The player who spun must immediately choose and discard cards from their hand until they have only 2 cards left.
+Discard Number: The player selects one number value from their hand and discards all cards matching that number into the discard pile.
+Discard Color: The player selects one color from their hand and discards all cards matching that color into the discard pile.
+Color Draw: Look at the color of the wheel space landed on (Red, Blue, Green, or Yellow). The player must continuously draw cards from the Draw Pile until they pull a card matching that specific color. All drawn cards are added to their hand.
+Wild Color Draw: The player names any color of their choice. They must continuously draw cards until they pull a card of that color.
+Trade Hands: Every single player at the table must simultaneously pass their entire hand to the player sitting on their left. (If a player receives a hand with exactly 1 card, they must immediately yell "UNO" or face a penalty).
+Show Hand: The spinning player must turn their cards around and publicly display their entire hand to every opponent at the table.
+War: Every player at the table must immediately choose the highest numbered card from their hand and reveal it simultaneously. The player who shows the highest number gets to permanently discard that card into the pile. Everyone else returns their card to their hand. (Ties are broken by comparing each tied player's second-highest card).
+UNO Spin: The moment the wheel clicks to a stop on this space, all players must immediately race to yell "UNO Spin!" out loud. The very first player to shout it is allowed to immediately discard any 1 card of their choice from their hand.
+
+Yelling "UNO!"
+When you downsize to your last 1 card, you must loudly shout "UNO!". If an opponent catches you forgetting to say it before the next player takes their action (either playing a card or spinning the wheel), you suffer the classic penalty and must draw 2 cards.
+
+Point Scoring System
+The round ends immediately when a player discards their final card. The winner of the round collects points for all cards remaining in the opponents' hands:
+Standard Numbered Cards (0-9): Face Value
+Spin Cards (Swirl 1-5): Face Value (counts the same as standard numbers)
+Skip / Reverse / Draw Two: 20 Points each
+Wild / Wild Draw Four: 50 Points each
+The first player to accumulate 500 total points across multiple rounds wins the entire game.
+
+
+
+
+Game 7: Uno Zero
+Uno Zero (also known as Uno Golf) is a fast-paced spin on classic Uno where the goal is to get the lowest score. Instead of holding cards, players build a \(2 \times 3\) grid of face-down cards. Players swap, reveal, and discard cards to hit a score of zero.
+
+Setup & The Grid
+The Grid: Each player deals 6 cards face-down in front of them, arranged in 3 columns and 2 rows.
+Starting Play: Every player flips exactly two of their cards face-up. Leave the remaining deck in the center with one card flipped up to start the discard pile.
+
+Basic Turn & Discarding
+On your turn, you draw one card from the draw pile or pick up the top card from the discard pile. You can do one of the following:
+Play in the Grid: Swap the drawn card with one of your face-down or face-up cards. The removed card goes into the discard pile.
+Discard Immediately: If the card you drew matches the color or number of the top card on the discard pile, you can immediately discard it without placing it in your grid.
+No Match: If you cannot (or choose not to) play the card, you must keep it and place it face-up in your grid.
+
+The "Zero" Mechanic (Grid Matching)
+At any point during the game, if you end up with two cards of the same color or number in the same vertical column, you can immediately discard both cards. You can slide the remaining card from the top row down to the bottom, leaving an empty space.
+
+Action Cards
+Action cards can be swapped into your grid or played from your hand.
+Reverse & Skip: The Skip card skips the next player; the Reverse changes the direction of play.
+Double Draw 2: When played, you either make one player draw 4 cards into their grid or choose two different players to draw 2 cards each. This expands their grid and adds to their end-of-round score.
+Wilds & Wild Draw 4: Played to change the color of the discard pile.
+
+Winning and Scoring
+Call "Uno Zero": When you only have one face-down card left in your grid, you must yell "Uno Zero!" If another player catches you before the next player takes their turn, you must draw two penalty cards.
+Ending a Round: The round ends when one player reveals all the cards in their grid.
+Scoring: The player who went out gets 0 points for that round. All other players flip their remaining face-down cards face-up and add up the values of all cards left in their grid.
+
+Winning the Game
+Play exactly nine rounds. After nine rounds, the player with the absolute lowest cumulative score wins the game.
+
+
+
+
+Game 8: Uno Flex
+UNO Flex is a strategic twist on the classic game where special "Flex Cards" and "Power Cards" let you change a card's color, or use an enhanced ability. The object remains the same: be the first player to get rid of all your cards.
+
+Key Concepts & Components
+Power Cards: Every player starts with a Power Card placed in front of them with the Green Checkmark side facing up. This shows you have "power" to use the special Flex abilities.
+Using a Flex Ability: When you play a Flex card for its special flex ability, you flip your Power Card to the Red X side. You cannot use any more flex abilities until your Power Card is flipped back to Green.
+Flipping Power Cards Back: Power Cards can be flipped back to Green in three ways:
+Playing a numbered card with a small "flip" symbol.
+Playing a Wild All Flip card (which forces everyone to flip).
+If every player's Power Card is currently on the Red side, all players automatically flip theirs back to Green.
+
+How to Play a Turn
+On your turn, you must match the top card of the discard pile with a card from your hand using one of the following methods:
+Match the Color: Play a card that matches the active color of the discard pile.
+Match the Number: Play a card that matches the number (e.g., matching a Red 5 with a Blue 5).
+Match the Symbol: Play a card that matches the symbol.
+Play a Flex Card: Flex cards are double-sided. The main side allows you to play the card normally matching its primary color. If you have a Green Power Card, you can choose to play the Flex Side instead (which usually alters the rule of the card).
+Play a Wild Card: You can play a Wild card at any time. It allows you to declare the next color to be played.
+If you don't have a matching card in your hand, you must draw one card from the draw pile. If the card you drew can be played, you may play it immediately. Otherwise, play passes to the next player.
+
+Special Flex Cards
+Flex Skip: Normal = Skips the next player. Flex = Skips ALL other players and passes the turn right back to you.
+Flex Reverse: Normal = Reverses the direction of play. Flex = Reverses direction AND skips the next player in the new direction.
+Flex Draw Two: Normal = Next player draws 2 cards. Flex = All other players draw 1 card.
+Wild Flex Draw Two: Normal = Acts as a normal Wild card. Flex = Lets you force a specific player of your choice to draw 2 cards.
+Wild All Flip: All players immediately flip their Power Cards to the opposite side.
+
+Winning the Game
+As in classic Uno, when you have only one card left, you must yell "UNO!". If you forget and another player catches you, you must draw two cards. The first player to play their last card wins the round.
+
+
+
+
+Game 9: Liar's Uno
+Liar's UNO is a bluffing-centric spin-off by Mattel where more than half the deck consists of "Liar's Cards" that must be played face down. Players can legally lie about what they are discarding, but they face penalties if another player successfully challenges their bluff.
+
+Game Setup
+The Deck Split: The game contains a mix of Regular Cards (white text and symbols) and Liar's Cards (black text/symbols inside a circle modifier).
+The Deal: Shuffle the deck and deal 7 cards face down to each player.
+The Setup: Place the rest of the deck face down to form the Draw Pile. Flip the top card face up to start the Discard Pile.
+
+Core Gameplay Rules
+On your turn, you must match the top card of the Discard Pile by Color, Number, or Symbol. However, how you play depends entirely on the type of card in your hand:
+Playing Regular Cards: These must always be played face up. They cannot be used to bluff.
+Playing Liar’s Cards: These must always be played face down. The moment you place it down, you must announce out loud what the card is (e.g., "This is a Red 7" or "This is a Blue Skip"), regardless of what it actually is.
+Telling the Truth: If the card actually matches and you declare it honestly, you are safe unless challenged.
+Bluffing (Lying): If you do not have a match, you can place a non-matching Liar's Card face down and lie about its contents. Your lie must be plausible (e.g., if the top card is a Red 3, you must claim your face-down card is a Red card, a 3 of any color, or a Wild card).
+No Match or Bluff: If you cannot match and do not want to bluff with a Liar's card, you must draw 1 card from the Draw pile.
+
+The Challenge Mechanic
+After a player places a Liar's Card face down and makes their announcement, any opponent can shout "Challenge!" before the next player starts their turn. The face-down card is flipped over to reveal the truth:
+If the Player Lied: The bluffing player is caught. They must take the card back into their hand and draw 1 penalty card from the draw pile.
+If the Player Told the Truth: The challenger was wrong. The card stays in the discard pile, and the challenger must draw 1 penalty card.
+If No One Challenges: The card stays face down, the play is considered safe, and any Action Card capabilities declared (like a Skip or Draw 2) immediately take effect—even if the player was lying.
+
+Special Action Cards
+0 (Zero Pass) & 7 (Seven Swap): These act as Liar's cards but carry the traditional "7-0" rules. If played face down and unchallenged, a 0 forces everyone to pass their hands in the direction of play, and a 7 lets you choose an opponent to swap hands with.
+Wild Liar's Challenge: Played face up. The player who throws it names a color. All other players must place one card of that color face down in front of them and state what it is. If they don't have that color, they must put down a random card and lie about its color.
+The active player can challenge opponents one by one to reveal their cards.
+If a player is caught lying, they take their card back and draw 1 penalty card. You can keep challenging until someone successfully reveals a true card of the chosen color.
+Once a true card is shown, that card and all remaining unchallenged cards are swept away into the discard pile, and your turn ends.
+
+Yelling "UNO!" and Scoring
+Yelling "UNO!": You must shout "UNO!" when down to your last 1 card. If caught forgetting before the next turn begins, you must draw 2 penalty cards.
+Winning a Round: The round ends when a player gets rid of their final card. If a player successfully discards their last card face down as part of a Wild Liar's Challenge and goes unchallenged, they win the round.
+Point Scoring: There is no point distinction between regular and liar card variants. Numbers count as face value, standard actions count as 20 points, and all Wild cards (including the Liar's Challenge) are worth 50 points. The first to reach 500 points wins the overall game.
+
+Game Strategy:
+在**《UNO 谎言版》（Liar's UNO）**中，巧妙地伪造功能牌（Action Card）和应对连续质疑，是掌控整场游戏节奏的核心技巧。
+以下是官方规则架构下的高级战术指南：
+
+伪装功能牌（Action Card）的最佳时机
+假装打出“王牌”不仅能自救，还能直接打乱对手的步调。以下四个时机最容易瞒天过海：
+
+上家打出同色牌时伪装“Draw 2”
+时机：当场上是一张绿色的普通数字牌，而你手里全是红蓝牌。
+操作：打出一张绿色的背面圆圈“谎言牌”，自信宣布：“绿色 Draw 2！”
+心理：下家通常会陷入极度纠结。因为颜色匹配合法，他们很难断定你是在“无法出牌时空城计”，还是真的想坑他们。为了避免挑战失败自己反吃罚牌，下家极大概率会选择直接认栽摸 2 张。
+
+场上有绝对“牌霸”时伪装“7（换牌）”
+时机：当某个对手手里只剩 1-2 张牌，且已经喊了“UNO”，而你手里还有一堆烂牌。
+操作：立刻打出任意合法的谎言牌，宣布它是数字“7”。
+心理：此时全场面临生死关头。如果你不换牌，大家都要输。那个快赢的“牌霸”绝对会拼死挑战你（因为他横竖都是输，不如搏一把）。但重点来了： 旁边的其他吃瓜玩家由于害怕挑战失败被罚牌，通常会选择保持沉默。你可以利用这种心理，在“牌霸”以外的玩家回合抢先实施。
+
+顺风局连续伪装“Skip（跳过）”或“Reverse（反转）”
+时机：当你手里有一堆功能单一的谎言数字牌，且局势对你有利。
+操作：不断宣布这些牌是同色的“Skip”或“Reverse”。
+心理：在游戏前期或中期，大家手中的牌都比较多，往往不愿意为了区区一个“被跳过回合”去冒风险挑战你。这种“低风险谎言”的成功率高得惊人，能帮你迅速消耗掉手里无用的谎言数字牌。
+
+如何处理连续多次的质疑（Consecutive Challenges）
+当牌局进入白热化，多名玩家对同一张牌或连续的回合产生怀疑时，必须严格遵守以下官方规则和结算机制：
+规则 1：一牌不二审（单张牌只能被挑战一次）
+当你打出一张谎言牌并宣布名称后，只有触发下一个动作之前的那个短暂窗口期允许玩家提出挑战。
+一旦有某一位玩家大喊“Challenge（挑战）！”，该张牌的挑战权即宣告锁定。其他玩家不能再对这张牌叠加提出挑战。
+
+规则 2：挑战结算的“排队与多米诺效应”
+如果多人同时喊出挑战，以声速最快、最先拍桌子或下家优先的原则决定唯一的挑战者。
+谎言败露：你将牌翻开，发现你确实撒谎了。你必须收回该牌，摸 1 张罚牌。此时你的回合立刻强制结束。原本被你伪造的功能（比如 Draw 2）失效。
+清白无辜：你翻开牌，证实自己说的是真话。那个挑战失败的玩家摸 1 张罚牌。此时，该功能牌的效果立即生效，并且直接作用于原本应该承受代价的玩家（可能就是那个挑战失败的人，也可能是顺位下家）。
+
+规则 3：连续回合的“滚雪球挑战”
+在《UNO 谎言版》中，经常出现“你上个回合刚被挑战完证明清白，下个回合你又打出一张背面牌，下家立刻再次挑战你”的情况。
+应对策略（以退为进）：如果你上一轮刚靠真话赢了挑战，全场往往会认为你手气正旺。此时是你立刻穿插一个大谎言的绝佳时机（即“真真假假”心理战）。因为对手刚刚被罚过牌，心理上会产生畏难情绪，连续第二轮对你发起挑战的心理门槛会变得极高。
+
+
+
+
+Game 10: Uno Party
+UNO Party! is an official standalone edition of the classic card game specifically redesigned for large groups of 6 to 16 players. While it retains the core matching elements of traditional UNO, it introduces heavy-group mechanics like speed-play cutting in, finger-pointing blame, temporary alliances, and lethal card mini-piles.
+
+Game Setup
+Separate Tracker & Links: Remove the Direction Tracker card and the two Link cards from the deck and place them in the middle of the table.
+The Deal: Shuffle the deck and deal exactly 7 cards face down to each player.
+Initialize Tracker: Place the Direction Tracker card with the "Clockwise" side facing up. Whenever a Reverse card is played later, you will flip this card to track the orientation.
+Starting Card: Flip the top card of the main deck to start the Discard Pile. If it is an Action or Wild card, ignore it and flip another until a standard number card appears.
+
+Central Party Mechanics
+1. Speed Play (Cutting In)
+Play Out of Turn: If it is not your turn, but you hold a card in your hand that is an exact match (same color AND same number/symbol) to the top card of the Discard Pile, you can loudly shout and slam it down immediately.
+Turn Hijacking: Once you cut in successfully, play resumes from you, continuing in the direction of the Tracker. Anyone who was skipped loses their turn entirely.
+Penalty: If you cut in with an invalid card by mistake, you must take it back and draw 1 penalty card.
+
+2. Penalty Stacking (The Draw Stack)
+If a player targets you with a Draw 2 or a Wild Draw 4 card, you do not have to draw. If you hold a matching draw card, you can play it on top to "stack" the penalty.
+The Chain: The total draw amount accumulates as it passes to the next player. This can continue sequentially until someone cannot play a matching draw card. That player must draw the total combined sum of cards (up to a rule cap of 10 cards maximum) and forfeits their turn.
+
+Exclusive Party Action Cards
+Point Taken (Colored Action Card):
+The player who discards this card shouts "3, 2, 1!". On the count of "1", every single player at the table must extend their arm and point their finger at any other player.
+Count the fingers pointing at you. You must immediately draw 1 card for every single person pointing at you (e.g., if 3 people point at you, you draw 3 cards).
+The maximum penalty a single player can receive from a single Point Taken card is 5 cards.
+
+Wild Drawn Together (Wild Card):
+The player who plays this chooses the active color and selects any two players at the table to form an alliance. Give each of them a physical Link Card.
+Shared Fate: For the rest of the round, whenever one of these linked players is penalized and forced to draw cards, the other linked player must immediately draw the exact same amount of cards.
+The link is instantly broken only when a new Wild Drawn Together card is played to link two different players.
+
+Wild Pile Up (Wild Card):
+The player who plays this sets the active color. Then, take the top card of the Draw Pile and flip it face up next to the next player in sequence to start a "mini-discard pile." (If it's a Wild, keep flipping until a colored card shows).
+The next player must play a card matching that exact color onto the mini-pile. The turn passes, and the subsequent player must do the same.
+The mini-pile circulates around the table until a player cannot play a matching color. That player loses the challenge and must add the entire mini-pile of accumulated cards to their hand.
+
+Going Out & Yelling "UNO!"
+The exact moment you downsize to your last 1 card, you must loudly yell "UNO!".
+The Group Penalty: Because there are so many players watching, the penalty for being caught forgetting is doubled. If an opponent catches you before the next player takes an action, you must draw 4 penalty cards (instead of the standard 2).
+The round ends immediately when a player discards their final card.
+
+Official Point Scoring System
+The winner of the round collects points based on all the cards remaining in their opponents' hands:
+Numbered Cards (0-9): Face Value
+Standard Actions (Skip, Reverse, Draw 2): 20 Points each
+Point Taken: 20 Points each
+Wild / Wild Draw 4 / Wild Drawn Together / Wild Pile Up: 50 Points each
+The first player across multiple rounds to accumulate 500 total points wins the overall game.
+
+
+
+
+Game 11: Uno Teams
+UNO Teams (often played using standard UNO decks or specialized team variants like UNO Teams: Face-Off) transforms the individual race into a cooperative strategy game where you win or lose together. The most critical rule to remember is that the round ends when either partner goes out, but your team only wins if your combined score is the lowest (or highest, depending on the format).
+
+Game Setup
+The Lineup: Designed for 4 players divided into 2 teams of two (or 6 players into 3 teams).
+Seating Arrangement: Partners must sit directly opposite each other at the table. Turn order must alternate between teams (Team A Player 1 \(\rightarrow \) Team B Player 1 \(\rightarrow \) Team A Player 2 \(\rightarrow \) Team B Player 2).
+The Deal: Shuffle the deck and deal exactly 7 cards face down to each player.
+Starting: Flip the top card of the deck face up to establish the Discard Pile. Play moves clockwise, starting to the left of the dealer.
+
+Core Teamplay Dynamics
+1. No Table Talk (The Secrecy Rule)
+You are strictly forbidden from showing your cards to your partner, hinting at what you hold, or telling them what color to call on a Wild card.
+All coordination must be done strictly through reading the board and anticipating your partner's needs.
+
+2. Passing Options (Optional Official Variant)
+On your turn, instead of playing a card to the discard pile, you may choose to pass 1 card face down to your partner.
+Your partner adds it to their hand, and you must then draw 1 card from the Draw Pile to maintain your hand size. Your turn then ends. This is used to feed your partner a card they desperately need to win.
+
+Action Card Interactions in Team Play
+Because you alternate seating, standard action cards take on heavy strategic depth:
+Skip: Skips the next player, which means you are skipping an opponent and giving your own partner an immediate turn.
+Reverse: In a 4-player team game, a Reverse changes the direction of play. It determines which opponent gets to act next, but it also alters who your partner will be passing turns to.
+Draw Two (+2) & Wild Draw Four (+4): These force the next player (your opponent) to draw cards and skip their turn. This severely cripples the enemy team while keeping the pressure off your partner.
+
+Yelling "UNO!" & Going Out
+When you or your partner downsize to 1 card, that specific player must loudly yell "UNO!".
+If an opponent catches a player forgetting to say it before the next action is taken, that player must draw 2 penalty cards.
+Winning the Round: The round ends the exact second any individual player clears their hand.
+
+Two Ways to Score (Official Mattel Formats)
+Depending on which official rule manual or edition you are using, teams score using one of two methods. Agree on the method before starting:
+
+Method A: Traditional Point Accumulation (Standard Manual)
+When a player goes out, the game stops. That player's team wins the round and scores points from all the cards left in BOTH opponents' hands. Your partner's remaining cards are completely ignored and do not count against you.
+Numbered Cards (0-9): Face Value
+Skip / Reverse / Draw 2: 20 Points each
+Wild / Wild Draw 4: 50 Points each
+Winning the Game: The first team to accumulate 500 points across multiple rounds wins.
+
+Method B: Low Score Elimination (Tournament Style)
+When a round ends, every single player counts the exact point values of the cards left in their hand. Partners then add their scores together to get a Team Score for that round.
+The team with the lowest combined score wins the round.
+The team scores are tracked on a sheet. Once a team crosses a threshold (usually 500 points), they are eliminated, and the team with the lowest score wins the overall tournament.
+
+
+
+
+Game 12: Uno House Rules
+UNO House Rules are custom variations that players commonly add to the standard game to increase chaos, speed, or strategy. While Mattel provides an official list of approved "House Rules" in their modern manuals, players worldwide have created iconic unwritten rules.
+
+Here are the details of the most popular and widely recognized UNO House Rules:
+1. Stacking (The Most Famous House Rule)
+This rule completely replaces the official rule that bans passing draw penalties.
+How it works: If Player A plays a Draw 2 (+2), Player B can play another Draw 2 from their hand instead of drawing. The penalty stacks to +4 and passes to Player C.
+Wild Draw 4 (+4) Stacking: A Wild Draw 4 can be stacked on top of a Draw 2 (raising the penalty to +6), or another Wild Draw 4 can be placed on top (raising it to +8).
+The End of the Chain: The stacking continues until a player cannot match the draw card. That player must draw the entire accumulated sum of cards and forfeit their turn.
+
+2. Jump-In (Speed Play)
+This rule removes the strict requirement to wait for your designated turn.
+How it works: If it is not your turn, but you hold a card that is an exact match (same color AND same number/symbol) to the card currently on top of the Discard Pile, you can slam it down immediately.
+Turn Stealing: Play instantly cuts to you. The game continues clockwise (or counterclockwise) from your position. The players who were skipped in the original order completely lose their turn.
+
+3. The "7-0" Rule (Hand Swapping)
+This rule turns specific numbers into mandatory, high-stakes card exchanges.
+The 0 Card (The Rotation): When any player plays a card with the number 0, every player at the table must pass their entire hand to the next person sitting in the current direction of play.
+The 7 Card (The Steal): When any player plays a card with the number 7, that player must swap their entire hand with any single opponent of their choice. This is used to instantly steal the hand of a player who just yelled "UNO!".
+
+4. Progressive / Cumulative Draw
+This rule changes how you interact with the Draw Pile when you don't have a matching card.
+Standard Rule: If you don't have a match, you draw one card. If it cannot be played, your turn ends.
+House Rule Variant: If you don't have a match, you must keep drawing cards one by one until you pull a card that can legally be played. This can accidentally explode a player's hand size from 2 cards to 15 cards in a single turn.
+
+5. Silent "2" (The Quiet Round)
+A purely social penalty rule designed to cause accidental card draws.
+How it works: Whenever any player plays a card with the number 2, the entire table must instantly stop talking out loud.
+The Penalty: Absolute silence must be maintained until another "2" card is played or until the round ends. Anyone who speaks, laughs audibly, or whispers during the silence must immediately draw 2 penalty cards.
+
+6. Single-Color Match (Discarding Duplicates)
+This rule helps players empty their hands much faster.
+How it works: On your turn, if you match the color of the discard pile, you are allowed to discard multiple cards of that exact same color at the same time, as long as they have the same number or symbol (e.g., if a Blue card is out, and you have two Blue 5s, you can drop both at once).
+
+7. The "Wild Death" / Overkill Rule
+A brutal house rule for players caught with Wild cards at the very end.
+How it works: If a round ends and you are caught holding a Wild Draw 4 card in your hand, you do not just give the winner 50 points—you are instantly eliminated from the entire game, regardless of your current point score.
+
+Selecting Your Rules: Mix and Match
+You absolutely do not apply all house rules at the same time. Doing so creates total mechanical gridlock (for example, combining Progressive Draw with Stacking can force someone to draw 30+ cards, completely emptying the draw deck in a single turn).
+The Custom Menu Approach: Treat house rules like a menu. Before shuffling the deck, all players must sit down and agree on which specific rules are active for that session.
+The Golden Rule: If a rule is not explicitly agreed upon before the first card is dealt, standard, classic Mattel rules apply by default.
+
+The Scoring System for House Rules
+When you introduce house rules, the standard scoring architecture must be adjusted to keep the game fair. Since house rules dramatically alter hand sizes, you score using one of two custom methods:
+Method 1: The Modern Point Multiplier (Traditional Style)
+If you play where the winner collects points from everyone else's hands, the baseline point values remain the same, but you add custom values for house-rule conditions:
+Standard Numbers (0-9): Face Value
+Regular Actions (Skip, Reverse, Draw 2): 20 Points each
+Wild / Wild Draw 4: 50 Points each
+The "7-0" Hand Penalty: If a round ends precisely on a 7 or 0 card, any player who was caught holding an opponent's "bad hand" must calculate those exact points.
+Winning Threshold: Because stacking and progressive drawing cause players to hold massive amounts of cards, rounds yield much higher scores. Raise the winning threshold from 500 points to 1,000 points.
+
+Method 2: The Direct Card Count (The Casual Party Style)
+Many groups who use heavy house rules completely discard Mattel's mathematical point system because tracking 50-point cards becomes too tedious. Instead, use this simplified tracking method:
+How it works: When a player goes out, the round ends. Every other player simply counts the total physical number of cards left in their hand, regardless of what the cards actually are.
+Scoring: Write down the number of cards as negative points or strikes next to each player's name (e.g., if you have 6 cards left, you get 6 points).
+Winning the Game: The game plays continuously until someone reaches 50 total cards/points. That person is eliminated, and the player with the lowest score at that moment is declared the winner.
+
+
+
+
+Game 13: Uno Challenge Adults Only
+UNO Challenge Adults Only (officially known as UNO Dare Adults Only in the US) blends classic UNO mechanics with a "truth or dare" twist.
+
+Game Setup
+Players: 2 to 10 players, ages 18 and up.
+Starting Hand: Shuffle the deck and deal 7 cards to each player.
+The Deck: Place the remaining cards face-down as the Draw Pile, and flip the top card over to start the Discard Pile.
+Dare Reference: Place the reference Dare Cards where all players can clearly see them.
+
+Core Gameplay
+Gameplay follows classic UNO shedding rules:
+On your turn, you must match the top card of the Discard Pile by color, number, or symbol.
+If you cannot make a match, you must draw one card from the Draw Pile. If that drawn card is playable, you may play it immediately; otherwise, your turn ends.
+
+The Twist: Dare Mechanics
+Instead of classic "Draw 2" or "Draw 4" penalties, this edition features Dare and Wild Dare cards. When a Dare card is played against you, you must choose between two options before taking your turn:
+Option 1: Take the Card Penalty. Treat the card like a standard UNO penalty and draw 2 cards, passing your turn.
+Option 2: Roll the Die. Commit to doing a dare. You must roll the included Dare Die to determine what happens next:
+Numbers 1 to 4: You must perform the corresponding dare level from the Dare Card (ranging from mild to NSFW/fuego).
+Truth (?) Symbol: The player who played the Dare card gets to ask you a personal truth question. You must answer honestly or draw 4 cards.
+Reverse Symbol: The penalty bounces back. The player who originally played the Dare card must now roll the die and complete a dare instead.
+Note: If you choose to roll the die but chicken out or fail the dare, you face an increased penalty of drawing 4 cards.
+
+Special Action Cards
+Skip: The next player loses their turn.
+Reverse: Changes the direction of card play (clockwise to counter-clockwise and vice versa).
+Wild Dare: Functions like a regular Dare card, but the person playing it gets to choose and change the active game color.
+
+Winning the Game
+Yell "UNO": When you are down to your last 1 card, you must yell "UNO!". If someone catches you forgetting to say it before the next player starts their turn, you must draw 2 penalty cards.
+Ending the Round: The round ends as soon as a player successfully discards all the cards in their hand.
+
+Scoring
+If playing multiple rounds for points, the player who goes out receives points based on the cards left in their opponents' hands:
+Number cards: Face value
+Skip / Reverse / Regular Dare: 20 points each
+Wild Dare: 50 points each
+Winner: The first player to reach 500 points wins the overall game.
+
+
+
+
+Game 14: Uno Flip Extreme
+UNO Flip Extreme (also marketed globally as UNO Flip Attack) combines the motorized card launcher mechanism of UNO Extreme/Attack with the double-sided card mechanics of UNO Flip.
+
+Game Setup
+Players: 2 to 10 players, ages 7 and up.
+Card Alignment: Ensure all double-sided cards are aligned in the same direction—the Light (Mild) Side facing one way and the Dark (Wild) Side facing the other.
+Starting Hand: Deal 7 cards to each player. Keep the Light Side facing you.
+The Launcher: Insert the remaining deck into the motorized Card Launcher cartridge with the Light Side facing out.
+Discard Pile: Flip the top card of the deck over to start the Discard Pile on the table.
+
+Core Gameplay
+The game begins on the Light Side. Play moves clockwise, starting to the left of the dealer.
+On your turn, match the top card of the Discard Pile by color, number, or symbol.
+If you don't have a match: Instead of drawing from a pile, you must press the button on the Card Launcher.
+If the launcher remains silent and no cards shoot out, your turn ends.
+If the launcher fires, you must add all cards shot out to your hand, and your turn ends.
+
+The Flip Mechanism
+When a player throws down a Flip Card, the entire game state reverses its face:
+1. All players must physically turn the cards in their hand around to face the opposite side.
+2. The Discard Pile is flipped completely over.
+3. Lift the Card Launcher lid all the way up until the motorized internal cartridge rotates 180 degrees, then close the lid. This aligns the launcher with the newly active side of the deck.
+4. Gameplay continues using the new side's color and action constraints until another Flip card is played.
+
+Special Action Cards
+The Light Side (Mild, Classic Play)
+Discard All: Allows you to play this card along with every other card in your hand that matches its color.
+Reverse: Changes the direction of play.
+Skip: The next player loses their turn.
+Flip Card: Rotates the game from the Light Side to the Dark Side.
+Wild Card: Changes the active playable color.
+Wild Launcher Attack: Choose a color. The next player must press the Card Launcher button twice, then their turn is skipped.
+
+The Dark Side (Wild, Severe Penalties)
+Reverse: Changes the direction of play.
+Skip Everyone: Skips every single player; the person who played it immediately takes another turn.
+Flip Card: Rotates the game from the Dark Side back to the Light Side.
+Wild Card: Changes the active playable color.
+Wild Extreme Hit: Choose a color. The next player must repeatedly press the Card Launcher button until cards physically shoot out at them. Once cards fire, they add them to their hand and lose their turn.
+
+Winning the Game
+Yell "UNO": When down to 1 card, you must yell "UNO!". If caught forgetting by an opponent before the next turn begins, you must press the Card Launcher button twice as a penalty.
+Going Out: The round ends the moment a player completely clears their hand.
+
+Scoring
+If tallying points across multiple rounds, the round winner scores points based on the cards remaining in opponents' hands, calculated only using the values of the side the game ended on:
+Numbered cards (0-9): Face value
+Standard Action Cards (Skip/Reverse/Flip/Discard All): 20 points each
+Skip Everyone: 30 points
+Wild Card: 40 points
+Wild Launcher Attack: 50 points
+Wild Extreme Hit: 60 points
+The first player to aggregate 500 points across all rounds wins the game.
+
+
+
+
+Game 15: Uno Der Herr der Ringe
+UNO Der Herr der Ringe (officially released in English as UNO The Lord of the Rings) features artwork of iconic characters from the Peter Jackson film trilogy. It retains standard UNO matching rules but introduces a thematic Middle-earth penalty card.
+
+Game Setup
+Players: 2 to 10 players, ages 7 and up.
+Starting Hand: Shuffle the deck and deal 7 cards face-down to each player.
+The Deck: Place the remaining cards face-down to create the Draw Pile. Flip the top card over to start the Discard Pile.
+Dealer: Each player draws a card; the highest number deals (Action cards count as 0).
+
+Core Gameplay
+Play starts to the left of the dealer and moves clockwise.
+On your turn, you must match the top card of the Discard Pile by color, number, or symbol/action.
+If you do not have a matching card, you must draw 1 card from the Draw Pile. If the drawn card is playable, you may drop it immediately; otherwise, your turn ends.
+
+The Special Theme Twist: "The Hunt For The Ring"
+This edition includes unique One Ring wild cards that enforce a mandatory group penalty:
+The One Ring Wild Card: When you play this card, you declare a new active color to continue play.
+The Penalty: Every other player must immediately check their current hand. Any player caught holding a "Ring Card" must immediately draw 3 cards from the Draw Pile.
+
+Standard Action Cards
+Draw Two (+2): The next player must draw 2 cards and completely lose their turn.
+Reverse: Reverses the direction of play (clockwise becomes counter-clockwise, and vice versa).
+Skip: The next player in rotation loses their turn.
+Wild: Can be played on any card. The player who throws it changes the active game color.
+Wild Draw Four (+4): Can be played on any card, changes the active color, and forces the next player to draw 4 cards while losing their turn. (Note: Officially, this should only be played if you do not possess a card matching the active color in your hand).
+
+Winning the Game
+Yell "UNO": When you play your next-to-last card and have only 1 card remaining, you must yell "UNO!". If another player catches you forgetting to say it before the next person begins their turn, you face a penalty and must draw 2 cards.
+Going Out: The round immediately ends when a player successfully discards their final card.
+
+Scoring
+The player who wins the round receives points for all cards left in their opponents' hands:
+Numbered Cards (0-9): Face value
+Draw Two / Reverse / Skip: 20 points each
+Wild / Wild Draw Four: 50 points each
+The One Ring Wild Card: 50 points
+The first player to accumulate 500 points across multiple rounds wins the overall game.
+
+
+
+
+Game 16: 4 Pop-Culture Uno editions
+The core setup, matching mechanics, turn order, and winning conditions (yelling "UNO" on your last card) for all four of these pop-culture editions follow the classic UNO rules. However, each edition features distinct theme-specific Wild Cards that introduce completely unique gameplay penalties.The detailed rules and custom card mechanics for all four editions are outlined below.
+
+General Rules (Applies to All 4 Games)
+Setup: Deal 7 cards face-down to each player. Place the remaining deck face-down as the Draw Pile. Flip the top card to form the Discard Pile.
+Turn Gameplay: You must match the top card of the Discard Pile by color, number, or symbol. If you cannot play a card, you must draw 1 card from the deck.
+The "UNO" Rule: When down to your last card, you must yell "UNO!". If caught by an opponent before the next player takes their turn, you must draw 2 penalty cards.
+Scoring: The first player to clear their hand wins the round and earns points from their opponents' remaining cards: Number cards (face value), Standard Action cards (20 points), and Theme/Wild cards (50 points). The first to reach 500 points wins the game.
+
+1. UNO Harry Potter
+This version features artwork of Harry, Hermione, Ron, and other Hogwarts characters.
+The Theme Twist: Wild Sorting Hat Card
+How it works: When you play this card, you choose an opponent and designate a color to resume play.
+The Penalty: The chosen opponent must immediately draw cards from the Draw Pile one by one until they pull a Gryffindor card (any card featuring a Gryffindor student, usually numbers 1–4). They must add all drawn cards to their hand.
+
+Standard Action Cards:
+Skip / Reverse / Draw Two (+2): Standard functions.
+Wild / Wild Draw Four (+4): Standard functions.
+
+
+2. UNO Star Wars
+This edition features legendary heroes, villains, and starships from across the Star Wars galaxy.
+The Theme Twist: Wild "The Force" Card
+How it works: When you play this card, you target a specific player and call out a color.
+The Penalty: The targeted player must show you their entire hand. If they have at least one card matching the color you called, they must draw 2 cards as a penalty. If they do not have that color, they face no penalty. Play then resumes using the color you originally declared.
+
+Standard Action Cards:
+Skip / Reverse / Draw Two (+2): Standard functions.
+Wild / Wild Draw Four (+4): Standard functions.
+
+
+3. UNO Marvel Avengers
+Featuring Earth's Mightiest Heroes, this deck changes defensive strategies with an iconic shielding mechanic.
+The Theme Twist: Avengers Assemble Wild Card
+How it works: This card acts as a specialized defensive shield. If an opponent hits you with a Draw Two (+2) or Wild Draw Four (+4) card, you can instantly play this card out of turn to block the draw penalty.
+The Penalty: The person who originally tried to penalize you must now draw those 2 or 4 cards themselves. You then get to declare the color that resumes play. (Note: If played on your normal turn without blocking, it simply functions as a regular Wild card).
+
+Standard Action Cards:
+Skip / Reverse / Draw Two (+2): Standard functions.
+Wild / Wild Draw Four (+4): Standard functions.
+
+
+4. UNO Jurassic World
+This edition features fierce dinosaurs and survival elements from the prehistoric franchise.
+The Theme Twist: "Attack of the T-Rex" Wild Card
+How it works: When you play this card, you choose a color to resume play.
+The Penalty: This triggers a frantic scramble for survival. The next player in turn order must look at their hand and successfully match the color you just called. If they do not hold a card of that specific color, they get "attacked" and must immediately draw 5 cards from the deck.
+
+Standard Action Cards:
+Skip / Reverse / Draw Two (+2): Standard functions.
+Wild / Wild Draw Four (+4): Standard functions.
+
+The Wild Draw Four Challenge Rule works exactly the same way across all four of these pop-culture editions. Because these games share the core rules of classic UNO, they all include the official "illegal play" restriction and the right to challenge.Here is the detailed breakdown of how the challenge rule works, the penalties involved, and how it interacts with the unique pop-culture cards.
+
+The Core Rule: When can you play a Wild Draw Four?
+You are officially allowed to play a Wild Draw Four card only if you do not have a card in your hand that matches the COLOR of the card currently on top of the Discard Pile.
+If you have a matching number or action symbol of a different color, you are still allowed to play the Wild Draw Four.
+If you play it while holding a matching color, you have played it illegally.
+
+How the Challenge Works
+When you play a Wild Draw Four, the next player (the victim who is supposed to draw 4 cards) has a choice before they touch the deck: they can accept the penalty, or they can announce a Challenge.
+If a challenge is called, you must privately show your entire hand of cards to that player to prove your innocence.
+Outcome A: The Challenge is SUCCESSFUL (You Cheated)
+If your hand reveals that you did have a card matching the active color on the discard pile:
+The Penalty: You are caught bluffing. You must take your Wild Draw Four card back into your hand (or leave it on the pile but forfeit its effect) and draw 4 cards from the deck yourself.
+The Victim: The challenged player draws 0 cards and takes their turn normally.
+Outcome B: The Challenge FAILS (You Were Innocent)
+If your hand proves that you truly did not have any cards matching the active color on the discard pile:
+The Penalty: The victim is punished for making a false accusation. They must draw the original 4 cards PLUS 2 extra penalty cards (for a total of 6 cards).
+The Victim's Turn: They completely lose their turn after drawing the 6 cards.
+
+Special Pop-Culture Card Interactions
+Because some of these editions feature special defensive or aggressive custom cards, specific conflicts can happen:
+1. Interaction with UNO Marvel Avengers (Avengers Assemble Card)
+The Avengers Assemble Wild Card allows you to block and deflect a Wild Draw Four penalty back to the shooter.
+The Timing: A player cannot challenge and deflect. The victim must choose one strategy.
+If they Deflect: If they play the Avengers Assemble card, the penalty immediately bounces back. The original shooter draws 4 cards. No hands are revealed, and no challenge takes place.
+If they Challenge: If the victim decides to challenge instead of using their shield, they must follow the standard challenge rules. If they lose the challenge, they must draw 6 cards (and cannot use the shield retroactively).
+2. Interaction with UNO Harry Potter (Sorting Hat)
+If you are forced to draw cards due to losing a challenge (drawing 6 cards) or being caught bluffing (drawing 4 cards), this counts as a standard penalty draw. It does not trigger the Sorting Hat mechanic. The Sorting Hat card only triggers its "draw until you get a Gryffindor" rule when it is explicitly played as its own action turn.
+
+
+
+
+Game 17: UNO All Wild
+UNO All Wild is a fast-paced spin-off of classic UNO where every single card in the deck is a Wild card. Because there are no colors or numbers to match, you can play any card from your hand on any turn. The focus shifts entirely from color matching to strategic action management.
+
+Game Setup
+Players: 2 to 10 players, ages 7 and up.
+Starting Hand: Shuffle the deck and deal 7 cards face-down to each player.
+The Deck: Place the remaining deck face-down to form the Draw Pile. Flip the top card over to start the Discard Pile. (If the flipped card is an Action card, its effect is ignored, and the first player simply plays any card on top of it).
+
+Core Gameplay
+Play starts to the left of the dealer and moves clockwise.
+On your turn, you can play any card from your hand onto the Discard Pile.
+There is no matching required. If you have cards in your hand, you must play one on your turn (you cannot choose to draw unless you are completely out of options or strategically playing a specific action).
+
+Special Action Cards
+Since every card is a Wild card, every card allows you to choose the next active color—though the color choice only matters if someone plays a specific action card that targets a color.
+Wild: A standard card with no special action. You play it to get rid of a card from your hand.
+Wild Reverse: Reverses the direction of play.Wild Skip: Skips the next player's turn.
+Wild Skip Two: Skips the next two players in the current rotation.
+Wild Draw Two (+2): The next player must draw 2 cards and completely lose their turn.
+Wild Draw Four (+4): The next player must draw 4 cards and completely lose their turn. (Note: Unlike regular UNO, this card can be played at any time; there are no restrictions or challenge rules).
+Wild Targeted Draw Two (+2): You choose any player at the table to draw 2 cards, regardless of seating order. The regular turn order then continues from the person who played the card.
+Wild Forced Swap: Choose an opponent and physically trade your entire hand of cards with them. If this leaves you with 1 card, you must immediately yell "UNO!".
+
+Winning the Game
+Yell "UNO": The moment you play your next-to-last card and have only 1 card remaining, you must yell "UNO!". If another player catches you forgetting to say it before the next person begins their turn, you must draw 2 penalty cards.
+Going Out: The round ends instantly when a player discards their final card.
+
+Scoring:
+The player who wins the round receives points based on the cards left in their opponents' hands:
+Standard Wild Card: 20 points
+Wild Reverse / Skip / Draw Two: 30 points each
+Wild Skip Two / Targeted Draw Two / Forced Swap: 40 points each
+Wild Draw Four: 50 points
+The first player to accumulate 500 points across multiple rounds wins the game.
+
+
+
+
+Game 18: Uno Show 'em No Mercy
+UNO Show 'em No Mercy is the most brutal and unforgiving version of UNO ever created. It introduces aggressive new action cards, harsher penalties, and a mechanics overhaul built to completely eliminate players from the game.
+
+Game Setup
+Players: 2 to 10 players, ages 7 and up.
+Starting Hand: Shuffle the massive deck and deal 7 cards face-down to each player.
+The Deck: Place the rest face-down to form the Draw Pile. Flip the top card over to start the Discard Pile. (If it is an action card, ignore it and flip until you hit a number card).
+
+Brutal Global Rules (The Big Changes)
+1. The Mercy Rule (Instant Elimination)There is a hard limit to how many cards you can hold. If you ever have 25 or more cards in your hand, you are instantly knocked out of the game. Your cards are removed, and play continues without you.
+2. Endless DrawingIn regular UNO, you draw one card if you can't play. In No Mercy, if you do not have a matching card in your hand, you must keep drawing cards from the deck until you pull a playable card. There is no single-card limit.
+3. Stacking PenaltiesYou can legally stack draw cards to avoid a penalty and pass it to the next player.
+If someone plays a draw card against you, you do not have to draw. You can drop another draw card from your hand that is equal to or higher in value than the one played against you.
+Example: If someone hits you with a Draw 2, you can stack a Draw 2, Draw 4, Draw 6, or Draw 10 on top of it. The total cumulative penalty shifts to the next player in line.
+This continues around the table until a player cannot respond. That final player must draw the combined total of all stacked cards and completely loses their turn.
+
+Special Action & Number Cards
+Every single draw card in this game carries an added penalty: the targeted player automatically loses their turn after drawing.
+Special Number Rules
+0's Pass: When you play a 0 card of any color, all players must physically pass their entire hand of cards to the person sitting next to them in the current direction of play.
+7's Swap: When you play a 7 card of any color, you must choose one player at the table and completely trade hands with them.
+Color Action Cards
+Draw Two (+2): Next player draws 2 cards and loses their turn.
+Draw Four (+4): Next player draws 4 cards and loses their turn.
+Discard All: Play this card to immediately discard every single card in your hand that matches its color, placing this card on top.
+Skip Everyone: Instantly skips every single player at the table, allowing you to immediately take another turn.
+Wild Action Cards
+Wild Draw Six (+6): You choose the active game color, and the next player must draw 6 cards and lose their turn.
+Wild Draw Ten (+10): You choose the active game color, and the next player must draw 10 cards and lose their turn.
+Wild Reverse Draw Four (+4): Reverses the active direction of play, and the player who is now next must draw 4 cards and lose their turn.
+Wild Color Roulette: The next player in turn order must choose a color. They must then keep drawing cards from the Draw Pile until they pull a card of that specific color. They add all drawn cards to their hand and lose their turn.
+
+Winning the Game
+Yell "UNO": When you are down to 1 card, you must yell "UNO!". If an opponent catches you forgetting before the next player starts their turn, you must draw 2 penalty cards.
+How to Win: A game ends when a player successfully discards their final card, OR when all other players have been eliminated by hitting the 25-card limit.
+
+Scoring:
+If tallying points across multiple rounds, the round winner scores points from opponents' remaining hands:
+Numbered cards (0-9): Face value
+Color Action cards: 20 points each
+Wild Action cards: 50 points each
+Knockout Bonus: You get an extra 250 points for every player you successfully eliminated by forcing them over the 25-card limit during that round.
+The first player to reach 1000 points wins the overall game.
