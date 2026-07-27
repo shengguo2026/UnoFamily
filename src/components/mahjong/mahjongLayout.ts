@@ -61,6 +61,19 @@ export interface MahjongTableLayout {
   discardCenter: MahjongVector3
 }
 
+export interface MahjongCameraFitInput {
+  viewportWidth: number
+  viewportHeight: number
+  fov: number
+  direction: MahjongVector3
+  bounds: {
+    width: number
+    depth: number
+    height: number
+  }
+  margin: number
+}
+
 export function createMahjongTableLayout(input: MahjongLayoutInput): MahjongTableLayout {
   const isMobile = input.viewportWidth < 700 || input.viewportHeight < 520
   const tableWidth = isMobile ? 9.4 : 14.4
@@ -73,14 +86,34 @@ export function createMahjongTableLayout(input: MahjongLayoutInput): MahjongTabl
   }
   const handZ = tableDepth / 2 - tile.height * 2.35
   const handX = tableWidth / 2 - tile.height * 2.35
+  const cameraFov = isMobile ? 62 : 38
+  const cameraDirection = { x: 0, y: isMobile ? 10.8 : 8.2, z: isMobile ? 7.6 : 7.8 }
+  const fittedCameraDistance = fitMahjongCameraDistance({
+    viewportWidth: input.viewportWidth,
+    viewportHeight: input.viewportHeight,
+    fov: cameraFov,
+    direction: cameraDirection,
+    bounds: {
+      width: tableWidth + 0.8,
+      depth: tableDepth + 0.8,
+      height: 1.4,
+    },
+    margin: 0.9,
+  })
+  const cameraDirectionLength = vectorLength(cameraDirection)
+  const cameraDistanceScale = fittedCameraDistance / cameraDirectionLength
 
   return {
     table: { width: tableWidth, depth: tableDepth },
     tile,
     wallStackLevels: 2,
     camera: {
-      fov: isMobile ? 62 : 38,
-      position: { x: 0, y: isMobile ? 10.8 : 8.2, z: isMobile ? 7.6 : 7.8 },
+      fov: cameraFov,
+      position: {
+        x: cameraDirection.x * cameraDistanceScale,
+        y: cameraDirection.y * cameraDistanceScale,
+        z: cameraDirection.z * cameraDistanceScale,
+      },
       target: { x: 0, y: 0, z: 0 },
     },
     seats: [
@@ -92,6 +125,46 @@ export function createMahjongTableLayout(input: MahjongLayoutInput): MahjongTabl
     wallStacks: createWallStacks(tableWidth, tableDepth, tile),
     discardCenter: { x: 0, y: tile.depth / 2, z: 0 },
   }
+}
+
+export function fitMahjongCameraDistance(input: MahjongCameraFitInput): number {
+  const viewportWidth = Math.max(1, input.viewportWidth)
+  const viewportHeight = Math.max(1, input.viewportHeight)
+  const aspect = viewportWidth / viewportHeight
+  const verticalHalfFov = Math.max(0.01, Math.min(Math.PI / 2 - 0.01, input.fov * Math.PI / 360))
+  const horizontalHalfFov = Math.atan(Math.tan(verticalHalfFov) * aspect)
+  const framingMargin = Math.max(0.1, Math.min(1, input.margin))
+  const direction = normalizeVector(input.direction, { x: 0, y: 1, z: 1 })
+  const forward = { x: -direction.x, y: -direction.y, z: -direction.z }
+  const worldUp = { x: 0, y: 1, z: 0 }
+  const rightCandidate = crossProduct(forward, worldUp)
+  const right = normalizeVector(
+    rightCandidate,
+    normalizeVector(crossProduct(forward, { x: 0, y: 0, z: 1 }), { x: 1, y: 0, z: 0 }),
+  )
+  const up = normalizeVector(crossProduct(right, forward), worldUp)
+  const halfWidth = Math.max(0, input.bounds.width / 2)
+  const halfDepth = Math.max(0, input.bounds.depth / 2)
+  const halfHeight = Math.max(0, input.bounds.height / 2)
+  const horizontalTangent = Math.max(0.001, Math.tan(horizontalHalfFov) * framingMargin)
+  const verticalTangent = Math.max(0.001, Math.tan(verticalHalfFov) * framingMargin)
+  let distance = 0.1
+
+  for (const x of [-halfWidth, halfWidth]) {
+    for (const y of [-halfHeight, halfHeight]) {
+      for (const z of [-halfDepth, halfDepth]) {
+        const corner = { x, y, z }
+        const forwardOffset = dotProduct(corner, forward)
+        distance = Math.max(
+          distance,
+          Math.abs(dotProduct(corner, right)) / horizontalTangent - forwardOffset,
+          Math.abs(dotProduct(corner, up)) / verticalTangent - forwardOffset,
+        )
+      }
+    }
+  }
+
+  return distance
 }
 
 function seat(id: MahjongSeatId, playerIndex: number, position: MahjongVector3, rotationY: number, maxTiles: number, axis: 'x' | 'z'): MahjongSeatLayout {
@@ -135,4 +208,30 @@ function createWallStacks(tableWidth: number, tableDepth: number, tile: MahjongT
   }
 
   return stacks
+}
+
+function vectorLength(vector: MahjongVector3): number {
+  return Math.hypot(vector.x, vector.y, vector.z)
+}
+
+function normalizeVector(vector: MahjongVector3, fallback: MahjongVector3): MahjongVector3 {
+  const length = vectorLength(vector)
+  if (length <= 0.000001) return normalizeVector(fallback, { x: 1, y: 0, z: 0 })
+  return {
+    x: vector.x / length,
+    y: vector.y / length,
+    z: vector.z / length,
+  }
+}
+
+function dotProduct(left: MahjongVector3, right: MahjongVector3): number {
+  return left.x * right.x + left.y * right.y + left.z * right.z
+}
+
+function crossProduct(left: MahjongVector3, right: MahjongVector3): MahjongVector3 {
+  return {
+    x: left.y * right.z - left.z * right.y,
+    y: left.z * right.x - left.x * right.z,
+    z: left.x * right.y - left.y * right.x,
+  }
 }

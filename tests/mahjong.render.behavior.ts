@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict'
+import * as THREE from 'three'
 import { createMahjongTableLayout } from '../src/components/mahjong/mahjongLayout'
 import { createMahjongTileFaceSpec } from '../src/components/mahjong/mahjongTextures'
 import {
@@ -23,6 +24,28 @@ function windTile(wind: 'east' | 'south' | 'west' | 'north'): MahjongTile {
 
 function dragonTile(dragon: 'red' | 'green' | 'white'): MahjongTile {
   return { id: `${dragon}-1`, category: 'dragon', dragon, copy: 1, key: `dragon-${dragon}` }
+}
+
+function assertTableFitsViewport(viewportWidth: number, viewportHeight: number, label: string): void {
+  const layout = createMahjongTableLayout({ viewportWidth, viewportHeight })
+  const camera = new THREE.PerspectiveCamera(layout.camera.fov, viewportWidth / viewportHeight, 0.1, 100)
+  camera.position.set(layout.camera.position.x, layout.camera.position.y, layout.camera.position.z)
+  camera.lookAt(layout.camera.target.x, layout.camera.target.y, layout.camera.target.z)
+  camera.updateMatrixWorld()
+  camera.updateProjectionMatrix()
+
+  const halfWidth = layout.table.width / 2 + 0.4
+  const halfDepth = layout.table.depth / 2 + 0.4
+  const halfHeight = 0.7
+  for (const x of [-halfWidth, halfWidth]) {
+    for (const y of [-halfHeight, halfHeight]) {
+      for (const z of [-halfDepth, halfDepth]) {
+        const projected = new THREE.Vector3(x, y, z).project(camera)
+        assert.equal(Math.abs(projected.x) <= 0.94, true, `${label} should keep the complete table inside the horizontal camera bounds`)
+        assert.equal(Math.abs(projected.y) <= 0.94, true, `${label} should keep the complete table inside the vertical camera bounds`)
+      }
+    }
+  }
 }
 
 {
@@ -63,6 +86,12 @@ function dragonTile(dragon: 'red' | 'green' | 'white'): MahjongTile {
     true,
     'mobile bottom hand should stay inside the table instead of hiding behind controls',
   )
+}
+
+{
+  assertTableFitsViewport(768, 787, 'portrait tablet')
+  assertTableFitsViewport(1024, 555, 'landscape tablet')
+  assertTableFitsViewport(1280, 811, '5:4 monitor')
 }
 
 {
