@@ -108,11 +108,15 @@ export function createMahjongScene(options: MahjongSceneOptions): MahjongSceneCo
   let gestureStartCenter: MahjongPointerState | null = null
   let gestureStartPan = { x: 0, z: 0 }
   let pointerMoved = false
+  let lastViewportWidth = 0
+  let lastViewportHeight = 0
+  let resizeObserver: ResizeObserver | null = null
+  let usesWindowResizeFallback = false
 
-  function rebuild(): void {
+  function rebuild(viewportWidth = lastViewportWidth || 1024, viewportHeight = lastViewportHeight || 640): void {
     const layout = createMahjongTableLayout({
-      viewportWidth: options.canvas.clientWidth || 1024,
-      viewportHeight: options.canvas.clientHeight || 640,
+      viewportWidth,
+      viewportHeight,
     })
     currentLayout = layout
     clearGroup(groups.table)
@@ -138,8 +142,23 @@ export function createMahjongScene(options: MahjongSceneOptions): MahjongSceneCo
     addEventCallout(groups.effects, layout, activeTransition, reducedMotion)
   }
 
+  function syncViewport(force = false): void {
+    const width = Math.max(1, Math.round(options.canvas.clientWidth || lastViewportWidth || 1024))
+    const height = Math.max(1, Math.round(options.canvas.clientHeight || lastViewportHeight || 640))
+    if (!force && width === lastViewportWidth && height === lastViewportHeight) return
+    lastViewportWidth = width
+    lastViewportHeight = height
+    renderer.setSize(width, height, false)
+    camera.aspect = width / height
+    rebuild(width, height)
+  }
+
+  function handleViewportResize(): void {
+    syncViewport()
+  }
+
   function render(timestamp = performance.now()): void {
-    resizeRenderer(renderer, camera)
+    syncViewport()
     animateMahjongScene(groups, timestamp, animationStartedAt, animationSpeed, reducedMotion)
     renderer.render(scene, camera)
     frame = window.requestAnimationFrame(render)
@@ -233,7 +252,14 @@ export function createMahjongScene(options: MahjongSceneOptions): MahjongSceneCo
   options.canvas.addEventListener('pointermove', handlePointerMove)
   options.canvas.addEventListener('pointerup', handlePointerUp)
   options.canvas.addEventListener('pointercancel', handlePointerUp)
-  rebuild()
+  if (typeof ResizeObserver === 'function') {
+    resizeObserver = new ResizeObserver(handleViewportResize)
+    resizeObserver.observe(options.canvas)
+  } else {
+    usesWindowResizeFallback = true
+    window.addEventListener('resize', handleViewportResize)
+  }
+  syncViewport(true)
   render()
 
   return {
@@ -262,6 +288,8 @@ export function createMahjongScene(options: MahjongSceneOptions): MahjongSceneCo
     },
     dispose() {
       window.cancelAnimationFrame(frame)
+      resizeObserver?.disconnect()
+      if (usesWindowResizeFallback) window.removeEventListener('resize', handleViewportResize)
       options.canvas.removeEventListener('pointerdown', handlePointerDown)
       options.canvas.removeEventListener('pointermove', handlePointerMove)
       options.canvas.removeEventListener('pointerup', handlePointerUp)
@@ -1254,17 +1282,6 @@ function pipPositions(count: number): Array<[number, number]> {
     9: [[-0.9, -1.05], [0, -1.05], [0.9, -1.05], [-0.9, 0], [0, 0], [0.9, 0], [-0.9, 1.05], [0, 1.05], [0.9, 1.05]],
   }
   return patterns[count] ?? patterns[1]
-}
-
-function resizeRenderer(renderer: THREE.WebGLRenderer, camera: THREE.PerspectiveCamera): void {
-  const canvas = renderer.domElement
-  const width = canvas.clientWidth || 1
-  const height = canvas.clientHeight || 1
-  if (canvas.width !== width || canvas.height !== height) {
-    renderer.setSize(width, height, false)
-    camera.aspect = width / height
-    camera.updateProjectionMatrix()
-  }
 }
 
 function clearGroup(group: THREE.Group): void {

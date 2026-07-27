@@ -43,7 +43,7 @@ that every projected corner has `abs(x) <= 0.94` and `abs(y) <= 0.94`.
 Run:
 
 ```powershell
-node tests/mahjong.render.behavior.ts
+npx --yes tsx tests/mahjong.render.behavior.ts
 ```
 
 Expected: FAIL for the portrait-tablet case because projected horizontal bounds
@@ -76,7 +76,7 @@ result to scale the existing mobile or desktop camera direction.
 Run:
 
 ```powershell
-node tests/mahjong.render.behavior.ts
+npx --yes tsx tests/mahjong.render.behavior.ts
 ```
 
 Expected: PASS with all projected bounds inside the framing limit.
@@ -144,7 +144,7 @@ as a low-cost fallback.
 Run:
 
 ```powershell
-node tests/mahjong.render.behavior.ts
+npx --yes tsx tests/mahjong.render.behavior.ts
 node tests/mobileTabletQa.behavior.mjs
 ```
 
@@ -166,8 +166,9 @@ Expected: both exit 0.
 
 - [ ] **Step 1: Run all behavior tests**
 
-Run every `tests/*.behavior.mjs` and `tests/*.behavior.ts` file with Node and
-stop on the first nonzero exit.
+Run every `tests/*.behavior.mjs` file with Node and every
+`tests/*.behavior.ts` file with the transient `tsx` runner, stopping on the
+first nonzero exit.
 
 - [ ] **Step 2: Run static and production checks**
 

@@ -21,6 +21,12 @@ assert.match(canvasSource, /event\.currentTarget\.setPointerCapture\(event\.poin
 
 assert.match(mahjongSource, /setPixelRatio\(Math\.min\(window\.devicePixelRatio \|\| 1, 2\)\)/, 'Mahjong WebGL should cap mobile DPR')
 assert.match(mahjongSource, /addEventListener\('pointercancel', handlePointerUp\)/, 'Mahjong gestures should handle interrupted touches')
+assert.match(mahjongSource, /new ResizeObserver/, 'Mahjong WebGL should observe live canvas size changes')
+assert.match(mahjongSource, /resizeObserver\.observe\(options\.canvas\)/, 'Mahjong WebGL should observe its rendered canvas')
+assert.match(mahjongSource, /resizeObserver\??\.disconnect\(\)/, 'Mahjong WebGL should clean up its resize observer')
+assert.match(mahjongSource, /lastViewportWidth/, 'Mahjong WebGL should cache its last CSS width')
+assert.match(mahjongSource, /lastViewportHeight/, 'Mahjong WebGL should cache its last CSS height')
+assert.doesNotMatch(mahjongSource, /canvas\.width !== width \|\| canvas\.height !== height/, 'Mahjong WebGL should not compare high-DPI backing pixels with CSS pixels')
 assert.match(appSource, /window\.addEventListener\('pointerdown', unlockAudio, \{ passive: true \}\)/, 'first touch should unlock audio')
 assert.match(appSource, /className="winner-celebration-overlay"[\s\S]*?onPointerDown=\{onFinish\}/, 'winner celebration should be skippable by touch')
 
