@@ -76,6 +76,11 @@ import { chooseMahjongAiAction, chooseMahjongDiscard, type MahjongAiAction } fro
 import { getMahjongHint } from './game/mahjong/hints'
 import { mahjongLogText, mahjongSelectedTileText, mahjongTileKeyText } from './game/mahjong/translation'
 import {
+  quatroActionReference,
+  quatroRuleSections,
+  quatroStrategySections,
+} from './game/quatro/translation'
+import {
   createMahjongGame,
   mahjongClaim,
   mahjongDeclareKong,
@@ -2728,6 +2733,13 @@ function RulesModal({
 
 function rulesForGame(language: Language, config: GameConfig): RuleSection[] {
   const common = commonRuleSections(language, config)
+  if (config.game === 'quatro') {
+    return [
+      ...quatroRuleSections(language),
+      ...quatroActionReference(language),
+      ...quatroStrategySections(language),
+    ]
+  }
   if (config.game === 'extreme') return [...extremeRuleSections(language), ...common]
   if (config.game === 'flash') return [...flashRuleSections(language), ...common]
   if (config.game === 'flip') return [...flipRuleSections(language), ...common]
