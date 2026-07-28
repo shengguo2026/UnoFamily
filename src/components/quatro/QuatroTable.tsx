@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import type { Language } from '../../i18n'
 import type { SoundCue } from '../../game/types'
 import { getQuatroHint } from '../../game/quatro/hints'
@@ -8,12 +8,27 @@ import {
 import type { QuatroState } from '../../game/quatro/types'
 import {
   quatroHintText,
+  quatroAuxiliaryText,
+  quatroLegalDestinationsText,
   quatroPlayerLabel,
   quatroText,
+  quatroTraceText,
   quatroTrayLabel,
 } from '../../game/quatro/translation'
 import { QuatroCanvas } from './QuatroCanvas'
 import { QuatroWinnerOverlay } from './QuatroWinnerOverlay'
+import {
+  quatroInitialDealKey,
+  quatroInitialDealPending,
+} from './quatroAnimations'
+import {
+  QUATRO_WINNING_LINE_HOLD_MS,
+  quatroWinnerPresentationStage,
+} from './quatroWinnerPresentation'
+import {
+  quatroActionGlyph,
+  type QuatroTileTheme,
+} from './quatroTileThemes'
 
 export type QuatroUiAction =
   | { type: 'place'; tileId: string; column: number }
@@ -29,6 +44,7 @@ interface QuatroTableProps {
   hiddenHands: boolean
   animationLocked: boolean
   reducedMotion: boolean
+  tileTheme: QuatroTileTheme
   onSelectTile: (tileId: string | null) => void
   onAction: (action: QuatroUiAction) => void
   onRevealHand: () => void
@@ -46,6 +62,7 @@ export function QuatroTable({
   hiddenHands,
   animationLocked,
   reducedMotion,
+  tileTheme,
   onSelectTile,
   onAction,
   onRevealHand,
@@ -77,6 +94,32 @@ export function QuatroTable({
     [state, viewer],
   )
   const movableTileIds = canInteract ? hint.tileIds : []
+  const playerNames = useMemo(
+    () => Object.fromEntries(
+      state.players.map((player) => [player.id, player.name]),
+    ),
+    [state.players],
+  )
+  const winnerPresentationKey = state.winnerId
+    ? `${state.winnerId}:${state.transitionSequence}`
+    : null
+  const [celebrationWinnerKey, setCelebrationWinnerKey] = useState<string | null>(
+    null,
+  )
+  const initialDealKey = quatroInitialDealKey(state)
+  const [completedInitialDealKey, setCompletedInitialDealKey] = useState<
+    string | null
+  >(null)
+  const initialDealPending = quatroInitialDealPending(
+    state,
+    completedInitialDealKey,
+  )
+  const winnerStage = quatroWinnerPresentationStage(
+    Boolean(state.winnerId),
+    celebrationWinnerKey === winnerPresentationKey
+      ? QUATRO_WINNING_LINE_HOLD_MS
+      : 0,
+  )
   const legalColumns = useMemo(
     () =>
       canInteract && selectedTileId
@@ -87,6 +130,16 @@ export function QuatroTable({
           : [],
     [canInteract, hint.columns, selectedTileId, state],
   )
+
+  useEffect(() => {
+    if (!winnerPresentationKey) return
+
+    const timer = window.setTimeout(
+      () => setCelebrationWinnerKey(winnerPresentationKey),
+      QUATRO_WINNING_LINE_HOLD_MS,
+    )
+    return () => window.clearTimeout(timer)
+  }, [winnerPresentationKey])
 
   function selectHandTile(tileId: string) {
     if (!canInteract) return
@@ -117,7 +170,11 @@ export function QuatroTable({
   }
 
   return (
-    <section className="quatro-table">
+    <section
+      className="quatro-table"
+      data-tile-theme={tileTheme}
+      data-initial-deal={initialDealPending ? 'pending' : 'complete'}
+    >
       <div className="quatro-status">
         <div>
           <span>{quatroText(language, 'turn')}</span>
@@ -133,13 +190,12 @@ export function QuatroTable({
         <QuatroCanvas
           state={state}
           viewerPlayerId={hiddenHands ? '' : viewerPlayerId ?? ''}
-          selectedTileId={selectedTileId}
-          movableTileIds={movableTileIds}
           legalColumns={legalColumns}
           labels={{ bag: quatroText(language, 'bag') }}
           animationSpeed={state.animationSpeed}
           reducedMotion={reducedMotion}
-          onTileSelect={selectHandTile}
+          tileTheme={tileTheme}
+          hideStaticHands={initialDealPending}
           onColumnSelect={selectColumn}
           onPendingChoice={(choice) =>
             onAction({
@@ -148,6 +204,14 @@ export function QuatroTable({
             })
           }
           onBlockingAnimationChange={onBlockingAnimationChange}
+          onTransitionAnimationComplete={(sequence) => {
+            if (
+              sequence === state.transitionSequence
+              && initialDealKey !== null
+            ) {
+              setCompletedInitialDealKey(initialDealKey)
+            }
+          }}
           onSoundCue={onSoundCue}
         />
 
@@ -181,7 +245,13 @@ export function QuatroTable({
           </div>
         )}
 
-        {state.winnerId && (
+        {winnerStage === 'winningLine' && (
+          <div className="quatro-winning-line-banner" role="status">
+            {quatroAuxiliaryText(language, 'winningLineConfirm')}
+          </div>
+        )}
+
+        {winnerStage === 'celebration' && (
           <QuatroWinnerOverlay
             state={state}
             language={language}
@@ -193,76 +263,128 @@ export function QuatroTable({
       </div>
 
       <aside className="quatro-controls">
-        <section className="quatro-hint">
+        <div className="quatro-hand-row">
+          {viewer && !hiddenHands && !initialDealPending && (
+            <section
+              className="quatro-hand"
+              aria-label={quatroText(language, 'hand')}
+            >
+              {viewer.hand.map((handTile) => {
+                const movable =
+                  movableTileIds.includes(handTile.id)
+                  || hint.kind === 'exchange'
+                const tileDescription = [
+                  quatroText(language, 'tile'),
+                  handTile.color,
+                  handTile.action
+                    ? quatroText(
+                        language,
+                        handTile.action === 'swap'
+                          ? 'actionSwap'
+                          : handTile.action === 'push'
+                            ? 'actionPush'
+                            : 'actionMinus2',
+                      )
+                    : '',
+                ].filter(Boolean).join(' · ')
+                const tooltipId = `quatro-tile-tip-${handTile.id}`
+                return (
+                  <button
+                    className={[
+                      'quatro-tile-button',
+                      movable ? 'quatro-legal' : '',
+                      selectedTileId === handTile.id ? 'selected' : '',
+                    ].filter(Boolean).join(' ')}
+                    type="button"
+                    key={handTile.id}
+                    aria-disabled={!canInteract || !movable}
+                    aria-describedby={tooltipId}
+                    aria-pressed={selectedTileId === handTile.id}
+                    onClick={() => selectHandTile(handTile.id)}
+                    onContextMenu={(event) => event.preventDefault()}
+                  >
+                    <span
+                      className={
+                        `quatro-hand-tile-face quatro-color-${handTile.color}`
+                      }
+                    >
+                      {handTile.value}
+                    </span>
+                    {handTile.action && (
+                      <span
+                        className="quatro-tile-action"
+                        aria-hidden="true"
+                      >
+                        {quatroActionGlyph(handTile.action)}
+                      </span>
+                    )}
+                    <small
+                      className="quatro-tile-tooltip"
+                      id={tooltipId}
+                      role="tooltip"
+                    >
+                      {tileDescription}
+                    </small>
+                  </button>
+                )
+              })}
+            </section>
+          )}
+
+          {canInteract && state.phase === 'chooseEmptyPush' && (
+            <div className="quatro-choice-actions">
+              <button
+                className="ghost-button"
+                type="button"
+                disabled={animationLocked}
+                onClick={() =>
+                  onAction({ type: 'emptyPush', pushOut: false })
+                }
+              >
+                {quatroText(language, 'keepTile')}
+              </button>
+              <button
+                className="primary-button"
+                type="button"
+                disabled={animationLocked}
+                onClick={() =>
+                  onAction({ type: 'emptyPush', pushOut: true })
+                }
+              >
+                {quatroText(language, 'pushOut')}
+              </button>
+            </div>
+          )}
+        </div>
+
+        <section className="quatro-info-pane" tabIndex={0}>
           <strong>{quatroText(language, 'selectTile')}</strong>
           <p>{quatroHintText(language, hint)}</p>
+          {legalColumns.length > 0 && (
+            <p className="quatro-legal-destinations">
+              {quatroLegalDestinationsText(language, legalColumns)}
+            </p>
+          )}
         </section>
 
-        {viewer && !hiddenHands && (
-          <section
-            className="quatro-hand"
-            aria-label={quatroText(language, 'hand')}
-          >
-            {viewer.hand.map((handTile) => {
-              const movable =
-                movableTileIds.includes(handTile.id)
-                || hint.kind === 'exchange'
-              return (
-                <button
-                  className={[
-                    movable ? 'quatro-legal' : '',
-                    selectedTileId === handTile.id ? 'selected' : '',
-                  ].filter(Boolean).join(' ')}
-                  type="button"
-                  key={handTile.id}
-                  disabled={!canInteract || !movable}
-                  onClick={() => selectHandTile(handTile.id)}
-                  aria-pressed={selectedTileId === handTile.id}
-                >
-                  <span>{handTile.value}</span>
-                  <small>
-                    {quatroText(language, 'tile')} · {handTile.color}
-                    {handTile.action
-                      ? ` · ${quatroText(
-                          language,
-                          handTile.action === 'swap'
-                            ? 'actionSwap'
-                            : handTile.action === 'push'
-                              ? 'actionPush'
-                              : 'actionMinus2',
-                        )}`
-                      : ''}
-                  </small>
-                </button>
-              )
-            })}
-          </section>
-        )}
-
-        {canInteract && state.phase === 'chooseEmptyPush' && (
-          <div className="quatro-choice-actions">
-            <button
-              className="ghost-button"
-              type="button"
-              disabled={animationLocked}
-              onClick={() =>
-                onAction({ type: 'emptyPush', pushOut: false })
-              }
-            >
-              {quatroText(language, 'keepTile')}
-            </button>
-            <button
-              className="primary-button"
-              type="button"
-              disabled={animationLocked}
-              onClick={() =>
-                onAction({ type: 'emptyPush', pushOut: true })
-              }
-            >
-              {quatroText(language, 'pushOut')}
-            </button>
-          </div>
-        )}
+        <section
+          className="quatro-trace"
+          aria-label={quatroAuxiliaryText(language, 'traceTitle')}
+          tabIndex={0}
+        >
+          <strong>{quatroAuxiliaryText(language, 'traceTitle')}</strong>
+          {state.log.length === 0 ? (
+            <p>{quatroAuxiliaryText(language, 'traceEmpty')}</p>
+          ) : (
+            <ol aria-live="polite">
+              {state.log.slice(-24).map((entry, index) => (
+                <li key={`${state.log.length}-${index}`}>
+                  {quatroTraceText(language, entry, playerNames)}
+                </li>
+              ))}
+            </ol>
+          )}
+        </section>
       </aside>
     </section>
   )

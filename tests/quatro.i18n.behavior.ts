@@ -6,6 +6,7 @@ import {
   quatroRuleSections,
   quatroStrategySections,
   quatroText,
+  quatroTraceText,
 } from '../src/game/quatro/translation'
 import type { Language } from '../src/i18n'
 
@@ -19,6 +20,29 @@ for (const key of QUATRO_TEXT_KEYS) {
     3,
     `${key} should have distinct English, Chinese, and German text`,
   )
+}
+
+{
+  const entry = {
+    kind: 'place' as const,
+    playerId: 'private-player-id',
+    tile: {
+      color: 'blue' as const,
+      value: 3 as const,
+      action: 'swap' as const,
+    },
+    column: 4,
+  }
+  const playerNames = { 'private-player-id': 'Player 1' }
+  const traceTexts = languages.map((language) =>
+    quatroTraceText(language, entry, playerNames),
+  )
+  assert.equal(traceTexts.every((text) => text.includes('Player 1')), true)
+  assert.equal(
+    traceTexts.every((text) => !text.includes('private-player-id')),
+    true,
+  )
+  assert.equal(new Set(traceTexts).size, 3)
 }
 
 for (const language of languages) {

@@ -8,6 +8,15 @@ import {
   QuatroTable,
   type QuatroUiAction,
 } from './components/quatro/QuatroTable'
+import {
+  defaultQuatroTileTheme,
+  normalizeQuatroTileTheme,
+  quatroTileThemeDescription,
+  quatroTileThemeIds,
+  quatroTileThemeName,
+  quatroTileThemeTitle,
+  type QuatroTileTheme,
+} from './components/quatro/quatroTileThemes'
 import { MahjongTable3D } from './components/mahjong/MahjongTable3D'
 import { deriveMahjongAnimationTransition } from './components/mahjong/mahjongAnimations'
 import {
@@ -166,6 +175,8 @@ import {
   type WifiGameSnapshot,
   type WifiPlayerAction,
 } from './network/localWifi'
+import { acceptQuatroWifiSnapshot } from './network/quatroWifiSnapshot'
+import { remapQuatroPlayersForWifi } from './network/quatroWifiPlayers'
 
 const colors: UnoColor[] = ['red', 'yellow', 'green', 'blue']
 const darkColors: UnoColor[] = ['teal', 'pink', 'purple', 'orange']
@@ -422,6 +433,18 @@ const runtimeQuatroRandom: QuatroRandom = {
   },
 }
 
+function loadQuatroTileTheme(): QuatroTileTheme {
+  if (typeof window === 'undefined') return defaultQuatroTileTheme
+  try {
+    const stored = JSON.parse(
+      window.localStorage.getItem('quatro-visual-settings') ?? '{}',
+    ) as { tileTheme?: unknown }
+    return normalizeQuatroTileTheme(stored.tileTheme)
+  } catch {
+    return defaultQuatroTileTheme
+  }
+}
+
 function loadMahjongVisualTheme(): MahjongVisualTheme {
   if (typeof window === 'undefined') return defaultMahjongVisualTheme
   try {
@@ -446,6 +469,9 @@ function App() {
   const [screen, setScreen] = useState<AppScreen>('home')
   const [config, setConfig] = useState<GameConfig>(() => loadVisualConfig(initialConfig))
   const [mahjongVisualTheme, setMahjongVisualTheme] = useState<MahjongVisualTheme>(() => loadMahjongVisualTheme())
+  const [quatroTileTheme, setQuatroTileTheme] = useState<QuatroTileTheme>(
+    () => loadQuatroTileTheme(),
+  )
   const [state, setState] = useState<GameState | null>(null)
   const [mahjongState, setMahjongState] = useState<MahjongState | null>(null)
   const [quatroState, setQuatroState] = useState<QuatroState | null>(null)
@@ -535,6 +561,13 @@ function App() {
   useEffect(() => {
     window.localStorage.setItem('mahjong-visual-settings', JSON.stringify(mahjongVisualTheme))
   }, [mahjongVisualTheme])
+
+  useEffect(() => {
+    window.localStorage.setItem(
+      'quatro-visual-settings',
+      JSON.stringify({ tileTheme: quatroTileTheme }),
+    )
+  }, [quatroTileTheme])
 
   useEffect(() => {
     sound?.setBackgroundMusicTheme(backgroundMusicThemeForGame(activeMusicGame))
@@ -789,7 +822,9 @@ function App() {
           : activeQuatroPlayer?.id ?? null
         : config.mode === 'wifi'
           ? wifiSnapshotPlayerId ?? wifiState.clientId ?? null
-          : null
+          : config.mode === 'spectacular'
+            ? quatroState.players[0].id
+            : null
     : null
   const mahjongHotSeatControlPlayerId = mahjongState && config.mode === 'hotseat' ? localMahjongControlPlayerId(mahjongState, config.mode, undefined) : null
   const mahjongHiddenHands = Boolean(
@@ -1482,31 +1517,19 @@ function App() {
         const room = wifiStateRef.current.room
         if (room && wifiStateRef.current.clientId === room.hostId) return
         if (snapshot.quatroState) {
-          const incomingSequence =
-            snapshot.quatroState.transitionSequence
-          const previousSequence = lastAnimatedQuatroSequence.current
-          const shouldAnimate =
-            previousSequence !== null
-            && incomingSequence > previousSequence
+          const accepted = acceptQuatroWifiSnapshot(
+            snapshot.quatroState,
+            lastAnimatedQuatroSequence.current,
+          )
+          const privateQuatro = accepted.state
           lastAnimatedQuatroSequence.current =
-            previousSequence === null
-              ? incomingSequence
-              : Math.max(previousSequence, incomingSequence)
-          const privateQuatro: QuatroState = {
-            ...snapshot.quatroState,
-            events: shouldAnimate
-              ? snapshot.quatroState.events
-              : [],
-          }
+            accepted.lastAnimatedSequence
           setWifiSnapshotPlayerId(snapshot.localPlayerId)
           setQuatroState(privateQuatro)
           quatroStateRef.current = privateQuatro
           setSelectedQuatroTileId(null)
           setState(null)
           gameStateRef.current = null
-          setQuatroState(null)
-          quatroStateRef.current = null
-          setSelectedQuatroTileId(null)
           setMahjongState(null)
           mahjongStateRef.current = null
           setPendingChoice(null)
@@ -1659,23 +1682,30 @@ function App() {
       })),
     ]
     if (room.game === 'quatro') {
-      const game = createQuatroGame({
-        mode: 'wifi',
-        aiDifficulty: room.aiDifficulty,
-        avatarId: participants[0].avatarId,
-        random: runtimeQuatroRandom,
-      })
-      game.players = game.players.map((player, index) => ({
-        ...player,
-        id: participants[index].id,
-        name: participants[index].name,
-        type: participants[index].type,
-        aiDifficulty:
-          participants[index].type === 'ai'
-            ? room.aiDifficulty
-            : undefined,
-        avatarId: participants[index].avatarId,
-      })) as QuatroState['players']
+      const game = remapQuatroPlayersForWifi(
+        createQuatroGame({
+          mode: 'wifi',
+          aiDifficulty: room.aiDifficulty,
+          avatarId: participants[0].avatarId,
+          random: runtimeQuatroRandom,
+        }),
+        [
+          {
+            ...participants[0],
+            aiDifficulty:
+              participants[0].type === 'ai'
+                ? room.aiDifficulty
+                : undefined,
+          },
+          {
+            ...participants[1],
+            aiDifficulty:
+              participants[1].type === 'ai'
+                ? room.aiDifficulty
+                : undefined,
+          },
+        ],
+      )
       setPendingChoice(null)
       setState(null)
       gameStateRef.current = null
@@ -2168,6 +2198,31 @@ function App() {
                 </select>
                 <strong></strong>
               </label>
+              {config.game === 'quatro' && (
+                <>
+                  <label className="field-row">
+                    <span>{quatroTileThemeTitle(language)}</span>
+                    <select
+                      value={quatroTileTheme}
+                      onChange={(event) =>
+                        setQuatroTileTheme(
+                          normalizeQuatroTileTheme(event.target.value),
+                        )
+                      }
+                    >
+                      {quatroTileThemeIds.map((themeId) => (
+                        <option key={themeId} value={themeId}>
+                          {quatroTileThemeName(language, themeId)}
+                        </option>
+                      ))}
+                    </select>
+                    <strong></strong>
+                  </label>
+                  <p className="hint">
+                    {quatroTileThemeDescription(language, quatroTileTheme)}
+                  </p>
+                </>
+              )}
               {isMahjongGame(config.game) && (
                 <>
                   <label className="field-row">
@@ -2535,6 +2590,7 @@ function App() {
               hiddenHands={quatroHiddenHands}
               animationLocked={isBlockingAnimationActive}
               reducedMotion={config.reducedMotion}
+              tileTheme={quatroTileTheme}
               onSelectTile={setSelectedQuatroTileId}
               onAction={dispatchQuatroAction}
               onRevealHand={() =>

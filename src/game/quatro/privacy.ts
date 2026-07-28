@@ -52,7 +52,24 @@ function privateEvent(
     }
   }
   if (event.kind === 'swap') {
-    return { ...event, columns: [...event.columns] as [number, number] }
+    return {
+      ...event,
+      columns: [...event.columns] as [number, number],
+      trayTiles: event.trayTiles
+        ? [
+            event.trayTiles[0].map(cloneTile),
+            event.trayTiles[1].map(cloneTile),
+          ]
+        : undefined,
+    }
+  }
+  if (event.kind === 'push') {
+    return {
+      ...event,
+      ejectedTile: event.ejectedTile
+        ? cloneTile(event.ejectedTile)
+        : event.ejectedTile,
+    }
   }
   if (event.kind === 'minus2Return') {
     return { ...event, tileIds: [...event.tileIds] as [string, string] }
@@ -90,6 +107,17 @@ export function createPrivateQuatroState(
           cells: state.winningLine.cells.map((cell) => ({ ...cell })),
         }
       : null,
-    log: [...state.log],
+    log: state.log.map((entry) => {
+      if (entry.kind === 'place') {
+        return { ...entry, tile: { ...entry.tile } }
+      }
+      if (entry.kind === 'swap') {
+        return {
+          ...entry,
+          columns: [...entry.columns] as [number, number],
+        }
+      }
+      return { ...entry }
+    }),
   }
 }

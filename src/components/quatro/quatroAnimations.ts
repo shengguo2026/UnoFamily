@@ -1,5 +1,9 @@
 import type { AnimationSpeed, SoundCue } from '../../game/types'
 import type { QuatroAnimationEvent } from '../../game/quatro/types'
+import type {
+  QuatroLayout,
+  QuatroRect,
+} from './quatroLayout'
 
 export type QuatroAnimationStyle =
   | 'static'
@@ -7,6 +11,7 @@ export type QuatroAnimationStyle =
   | 'linear'
   | 'bounce'
   | 'cross'
+  | 'push'
   | 'pulse'
   | 'particles'
 
@@ -15,6 +20,7 @@ export interface QuatroAnimationTrack {
   startsAt: number
   endsAt: number
   eventIndex: number
+  movementIndex?: number
   event: QuatroAnimationEvent
   style: QuatroAnimationStyle
 }
@@ -27,6 +33,38 @@ export interface QuatroAnimationTimeline {
 export interface QuatroAnimationSettings {
   speed: AnimationSpeed
   reducedMotion: boolean
+}
+
+export interface QuatroAnimationTransitionSource {
+  transitionSequence: number
+  events: readonly QuatroAnimationEvent[]
+}
+
+export interface QuatroAnimationTransition {
+  transitionSequence: number
+  timeline: QuatroAnimationTimeline
+}
+
+export function quatroInitialDealKey(
+  transition: QuatroAnimationTransitionSource,
+): string | null {
+  const deal = transition.events.find((event) => event.kind === 'deal')
+  if (!deal || deal.kind !== 'deal') return null
+  return [
+    transition.transitionSequence,
+    ...deal.movements.flatMap((movement) => [
+      movement.playerId,
+      movement.tileId,
+    ]),
+  ].join(':')
+}
+
+export function quatroInitialDealPending(
+  transition: QuatroAnimationTransitionSource,
+  completedDealKey: string | null,
+): boolean {
+  const dealKey = quatroInitialDealKey(transition)
+  return dealKey !== null && completedDealKey !== dealKey
 }
 
 const speedMultipliers: Record<AnimationSpeed, number> = {
@@ -44,11 +82,13 @@ function fullMotionTracks(
     duration: number,
     style: QuatroAnimationStyle,
     offset = 0,
+    movementIndex?: number,
   ): QuatroAnimationTrack => ({
     kind: event.kind,
     startsAt: startsAt + offset,
     endsAt: startsAt + offset + duration,
     eventIndex,
+    ...(movementIndex === undefined ? {} : { movementIndex }),
     event,
     style,
   })
@@ -58,7 +98,7 @@ function fullMotionTracks(
   }
   if (event.kind === 'deal') {
     const tracks = event.movements.map((_, index) =>
-      track(360, 'linear', index * 105),
+      track(360, 'linear', index * 105, index),
     )
     return {
       tracks,
@@ -74,11 +114,14 @@ function fullMotionTracks(
     return { tracks: [track(720, 'cross')], duration: 720 }
   }
   if (event.kind === 'push') {
-    return { tracks: [track(650, 'linear')], duration: 650 }
+    return { tracks: [track(760, 'push')], duration: 760 }
   }
   if (event.kind === 'minus2Return') {
     return {
-      tracks: [track(480, 'linear'), track(480, 'linear', 120)],
+      tracks: [
+        track(480, 'linear', 0, 0),
+        track(480, 'linear', 120, 1),
+      ],
       duration: 600,
     }
   }
@@ -98,6 +141,92 @@ function fullMotionTracks(
     }
   }
   return { tracks: [track(80, 'linear')], duration: 80 }
+}
+
+export function quatroAnimationHandForPlayer(
+  viewerPlayerId: string,
+  playerId: string,
+): 'near' | 'far' {
+  return playerId === viewerPlayerId ? 'near' : 'far'
+}
+
+export function quatroSoundKey(
+  transitionSequence: number,
+  track: QuatroAnimationTrack,
+): string {
+  return [
+    transitionSequence,
+    track.eventIndex,
+    track.kind === 'deal' ? track.movementIndex ?? 0 : 0,
+  ].join(':')
+}
+
+export function quatroDropPoint(
+  layout: QuatroLayout,
+  event: Extract<QuatroAnimationEvent, { kind: 'drop' }>,
+  progress: number,
+): { x: number; y: number } {
+  const normalized = Math.max(0, Math.min(1, progress))
+  const slot = layout.slots[event.column][event.row]
+  const startY = layout.board.y - slot.height
+  const eased = 1 - (1 - normalized) ** 3
+  const bounce =
+    Math.sin(normalized * Math.PI * 3)
+    * (1 - normalized)
+    * Math.max(8, slot.height * 0.32)
+  return {
+    x: slot.x,
+    y: startY + (slot.y - startY) * eased - bounce,
+  }
+}
+
+export function quatroPushArrowGeometry(
+  layout: QuatroLayout,
+  column: number,
+  progress: number,
+): { x: number; y: number } {
+  const normalized = Math.max(0, Math.min(1, progress))
+  const tray = layout.trays[column]
+  return {
+    x: tray.x + tray.width / 2,
+    y:
+      tray.y
+      + tray.height * (0.16 + normalized * 0.72),
+  }
+}
+
+export interface QuatroSwapTrayTransform extends QuatroRect {
+  sourceColumn: number
+  targetColumn: number
+}
+
+export function quatroSwapTrayTransforms(
+  layout: QuatroLayout,
+  columns: [number, number],
+  progress: number,
+): [QuatroSwapTrayTransform, QuatroSwapTrayTransform] {
+  const normalized = Math.max(0, Math.min(1, progress))
+  const lift = Math.sin(normalized * Math.PI)
+    * Math.min(52, layout.board.height * 0.13)
+  const makeTransform = (
+    sourceColumn: number,
+    targetColumn: number,
+  ): QuatroSwapTrayTransform => {
+    const source = layout.trays[sourceColumn]
+    const target = layout.trays[targetColumn]
+    return {
+      sourceColumn,
+      targetColumn,
+      x: source.x + (target.x - source.x) * normalized,
+      y: source.y - lift,
+      width: source.width,
+      height: source.height,
+    }
+  }
+  return [
+    makeTransform(columns[0], columns[1]),
+    makeTransform(columns[1], columns[0]),
+  ]
 }
 
 export function buildQuatroAnimationTimeline(
@@ -139,6 +268,35 @@ export function buildQuatroAnimationTimeline(
     durationMs: Math.round(cursor * multiplier),
     tracks: scaledTracks,
   }
+}
+
+export function buildQuatroAnimationTimelineForTransition(
+  transition: QuatroAnimationTransitionSource,
+  settings: QuatroAnimationSettings,
+): QuatroAnimationTransition {
+  return {
+    transitionSequence: transition.transitionSequence,
+    timeline: buildQuatroAnimationTimeline(transition.events, settings),
+  }
+}
+
+export function quatroActiveDropTileIds(
+  tracks: readonly QuatroAnimationTrack[],
+  elapsedMs: number,
+): Set<string> {
+  return new Set(
+    tracks
+      .filter(
+        (track) =>
+          track.event.kind === 'drop'
+          && track.style !== 'static'
+          && elapsedMs >= track.startsAt
+          && elapsedMs <= track.endsAt,
+      )
+      .map((track) =>
+        track.event.kind === 'drop' ? track.event.tileId : '',
+      ),
+  )
 }
 
 export function soundCueForQuatroEvent(

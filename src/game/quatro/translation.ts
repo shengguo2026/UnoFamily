@@ -1,5 +1,9 @@
 import type { Language } from '../../i18n'
 import type { QuatroHint } from './hints'
+import type {
+  QuatroColor,
+  QuatroTraceEntry,
+} from './types'
 
 export const QUATRO_TEXT_KEYS = [
   'gameTitle',
@@ -354,6 +358,18 @@ export function quatroTrayLabel(
   return `${quatroText(language, 'tray')} ${trayNumber}`
 }
 
+export function quatroLegalDestinationsText(
+  language: Language,
+  columns: readonly number[],
+): string {
+  const trays = columns.map((column) =>
+    quatroTrayLabel(language, column + 1),
+  ).join(', ')
+  if (language === 'zh') return `可用槽列：${trays}`
+  if (language === 'de') return `Gültige Ziele: ${trays}`
+  return `Legal destinations: ${trays}`
+}
+
 export function quatroWinnerText(
   language: Language,
   playerName: string,
@@ -361,4 +377,119 @@ export function quatroWinnerText(
   if (language === 'zh') return `${playerName} 完成四连线！`
   if (language === 'de') return `${playerName} hat vier in einer Reihe!`
   return `${playerName} completed four in a row!`
+}
+
+export function quatroAuxiliaryText(
+  language: Language,
+  key: 'traceTitle' | 'traceEmpty' | 'winningLineConfirm',
+): string {
+  const text = {
+    en: {
+      traceTitle: 'Move trace',
+      traceEmpty: 'Moves from both players will appear here.',
+      winningLineConfirm: 'Winning line confirmed',
+    },
+    zh: {
+      traceTitle: '行动记录',
+      traceEmpty: '两位玩家的行动将显示在这里。',
+      winningLineConfirm: '胜利四连线已确认',
+    },
+    de: {
+      traceTitle: 'Zugprotokoll',
+      traceEmpty: 'Die Züge beider Personen erscheinen hier.',
+      winningLineConfirm: 'Gewinnlinie bestätigt',
+    },
+  } as const
+  return text[language][key]
+}
+
+const colorNames: Record<Language, Record<QuatroColor, string>> = {
+  en: {
+    red: 'red',
+    green: 'green',
+    yellow: 'yellow',
+    blue: 'blue',
+  },
+  zh: {
+    red: '红色',
+    green: '绿色',
+    yellow: '黄色',
+    blue: '蓝色',
+  },
+  de: {
+    red: 'roten',
+    green: 'grünen',
+    yellow: 'gelben',
+    blue: 'blauen',
+  },
+}
+
+function tracePlayerName(
+  playerId: string,
+  playerNames: Readonly<Record<string, string>>,
+): string {
+  return playerNames[playerId] ?? 'Player'
+}
+
+export function quatroTraceText(
+  language: Language,
+  entry: QuatroTraceEntry,
+  playerNames: Readonly<Record<string, string>>,
+): string {
+  const player = tracePlayerName(entry.playerId, playerNames)
+  if (entry.kind === 'place') {
+    const tray = entry.column + 1
+    const action =
+      entry.tile.action === 'swap'
+        ? language === 'zh' ? '（交换）' : language === 'de' ? ' (Tausch)' : ' (Swap)'
+        : entry.tile.action === 'push'
+          ? language === 'zh' ? '（下压）' : ' (Push)'
+          : entry.tile.action === 'minus2'
+            ? language === 'zh' ? '（减 2）' : ' (Minus 2)'
+            : ''
+    if (language === 'zh') {
+      return `${player} 将${colorNames.zh[entry.tile.color]} ${entry.tile.value}${action} 放入第 ${tray} 槽。`
+    }
+    if (language === 'de') {
+      return `${player} setzt den ${colorNames.de[entry.tile.color]} Stein ${entry.tile.value}${action} in Schiene ${tray}.`
+    }
+    return `${player} placed ${colorNames.en[entry.tile.color]} ${entry.tile.value}${action} in Tray ${tray}.`
+  }
+  if (entry.kind === 'swap') {
+    const first = entry.columns[0] + 1
+    const second = entry.columns[1] + 1
+    if (language === 'zh') return `${player} 交换了第 ${first} 槽和第 ${second} 槽。`
+    if (language === 'de') return `${player} tauscht Schiene ${first} und ${second}.`
+    return `${player} swapped Tray ${first} and Tray ${second}.`
+  }
+  if (entry.kind === 'push') {
+    const tray = entry.column + 1
+    if (language === 'zh') {
+      return entry.ejected
+        ? `${player} 压动第 ${tray} 槽，一个方块返回袋中。`
+        : `${player} 在第 ${tray} 槽保留了压入方块。`
+    }
+    if (language === 'de') {
+      return entry.ejected
+        ? `${player} drückt Schiene ${tray}; ein Stein geht zurück in den Beutel.`
+        : `${player} behält den Push-Stein in Schiene ${tray}.`
+    }
+    return entry.ejected
+      ? `${player} pushed Tray ${tray}; one tile returned to the bag.`
+      : `${player} kept the Push tile in Tray ${tray}.`
+  }
+  if (entry.kind === 'minus2') {
+    const target = tracePlayerName(entry.targetPlayerId, playerNames)
+    if (language === 'zh') return `${player} 对 ${target} 使用减 2。`
+    if (language === 'de') return `${player} spielt Minus 2 gegen ${target}.`
+    return `${player} played Minus 2 against ${target}.`
+  }
+  if (entry.kind === 'exchange') {
+    if (language === 'zh') return `${player} 放回一个方块并抽取了替代方块。`
+    if (language === 'de') return `${player} gibt einen Stein zurück und zieht Ersatz.`
+    return `${player} returned one tile and drew a replacement.`
+  }
+  if (language === 'zh') return `${player} 完成了胜利四连线。`
+  if (language === 'de') return `${player} vervollständigt die Gewinnlinie.`
+  return `${player} completed the winning line.`
 }

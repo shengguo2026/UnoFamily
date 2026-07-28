@@ -9,11 +9,29 @@ import type {
   QuatroRandom,
   QuatroState,
   QuatroTile,
+  QuatroTraceEntry,
   QuatroWinningLine,
 } from './types'
 
 const COLUMN_COUNT = 7
 const COLUMN_CAPACITY = 6
+
+function publicTileFace(
+  tile: QuatroTile,
+): Pick<QuatroTile, 'color' | 'value' | 'action'> {
+  return {
+    color: tile.color,
+    value: tile.value,
+    action: tile.action,
+  }
+}
+
+function appendTrace(
+  state: QuatroState,
+  ...entries: QuatroTraceEntry[]
+): QuatroTraceEntry[] {
+  return [...state.log, ...entries]
+}
 
 function cloneColumns(
   columns: QuatroState['columns'],
@@ -284,6 +302,22 @@ function finishResolvedMove(
         ...state.events,
         { kind: 'win', playerId, line: winningLine },
       ],
+      log: appendTrace(
+        state,
+        winningLine.match === 'color'
+          ? {
+              kind: 'win',
+              playerId,
+              match: 'color',
+              color: winningLine.color,
+            }
+          : {
+              kind: 'win',
+              playerId,
+              match: 'number',
+              value: winningLine.value,
+            },
+      ),
     }
   }
 
@@ -371,6 +405,12 @@ export function quatroPlaceTile(
         row: simulation.landingRow,
       },
     ],
+    log: appendTrace(state, {
+      kind: 'place',
+      playerId,
+      tile: publicTileFace(playedTile),
+      column: columnIndex,
+    }),
   }
 
   if (playedTile.action === 'swap') {
@@ -397,8 +437,15 @@ export function quatroPlaceTile(
           column: columnIndex,
           tileId,
           ejectedTileId: previousBottom?.id ?? null,
+          ejectedTile: previousBottom ?? null,
         },
       ],
+      log: appendTrace(placed, {
+        kind: 'push',
+        playerId,
+        column: columnIndex,
+        ejected: Boolean(previousBottom),
+      }),
     }
     return finishResolvedMove(pushed, playerId, random)
   }
@@ -444,6 +491,12 @@ export function quatroPlaceTile(
           tileIds: [removed[0].id, removed[1].id],
         },
       ],
+      log: appendTrace(placed, {
+        kind: 'minus2',
+        playerId,
+        targetPlayerId: opponent.id,
+        returnedCount: 2,
+      }),
     }
     return finishResolvedMove(attacked, playerId, random)
   }
@@ -491,6 +544,10 @@ export function quatroSelectSwapColumn(
   }
 
   const firstColumn = state.pendingSwapFirstColumn
+  const trayTiles: [QuatroTile[], QuatroTile[]] = [
+    [...state.columns[firstColumn]],
+    [...state.columns[columnIndex]],
+  ]
   const columns = cloneColumns(state.columns)
   ;[columns[firstColumn], columns[columnIndex]] = [
     columns[columnIndex],
@@ -502,7 +559,18 @@ export function quatroSelectSwapColumn(
       columns,
       phase: 'playing',
       transitionSequence: state.transitionSequence + 1,
-      events: [{ kind: 'swap', columns: [firstColumn, columnIndex] }],
+      events: [
+        {
+          kind: 'swap',
+          columns: [firstColumn, columnIndex],
+          trayTiles,
+        },
+      ],
+      log: appendTrace(state, {
+        kind: 'swap',
+        playerId,
+        columns: [firstColumn, columnIndex],
+      }),
     },
     playerId,
     random,
@@ -551,8 +619,15 @@ export function quatroResolveEmptyPush(
           column: columnIndex,
           tileId: pushedTile.id,
           ejectedTileId: pushOut ? pushedTile.id : null,
+          ejectedTile: pushOut ? pushedTile : null,
         },
       ],
+      log: appendTrace(state, {
+        kind: 'push',
+        playerId,
+        column: columnIndex,
+        ejected: pushOut,
+      }),
     },
     playerId,
     random,
@@ -611,6 +686,10 @@ export function quatroExchangeTile(
       { kind: 'returnToBag', playerId, tileId },
       { kind: 'draw', playerId, tileId: drawn.id },
     ],
+    log: appendTrace(state, {
+      kind: 'exchange',
+      playerId,
+    }),
   }
 
   if (quatroLegalColumns(exchanged, drawn.id).length > 0) {

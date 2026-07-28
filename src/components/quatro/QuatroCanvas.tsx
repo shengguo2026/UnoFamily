@@ -9,39 +9,45 @@ import type { AnimationSpeed, SoundCue } from '../../game/types'
 import {
   createQuatroLayout,
   hitTestQuatroLayout,
+  quatroCanvasHandCounts,
+  quatroWinningLineFrames,
   type QuatroLayout,
   type QuatroRect,
 } from './quatroLayout'
 import {
-  buildQuatroAnimationTimeline,
+  buildQuatroAnimationTimelineForTransition,
+  quatroActiveDropTileIds,
+  quatroAnimationHandForPlayer,
+  quatroDropPoint,
+  quatroPushArrowGeometry,
+  quatroSoundKey,
+  quatroSwapTrayTransforms,
   soundCueForQuatroEvent,
   type QuatroAnimationTrack,
 } from './quatroAnimations'
+import {
+  quatroActionGlyph,
+  quatroTileThemePalettes,
+  type QuatroTileTheme,
+} from './quatroTileThemes'
 
 interface QuatroCanvasProps {
   state: QuatroState
   viewerPlayerId: string
-  selectedTileId: string | null
-  movableTileIds: string[]
   legalColumns: number[]
   labels?: {
     bag?: string
     tray?: string
   }
-  onTileSelect: (tileId: string) => void
   onColumnSelect: (column: number) => void
   onPendingChoice: (choice: 'keep' | 'push') => void
   onBlockingAnimationChange?: (blocking: boolean) => void
   animationSpeed?: AnimationSpeed
   reducedMotion?: boolean
+  tileTheme: QuatroTileTheme
+  hideStaticHands?: boolean
+  onTransitionAnimationComplete?: (transitionSequence: number) => void
   onSoundCue?: (cue: SoundCue) => void
-}
-
-const tileColors: Record<QuatroColor, string> = {
-  red: '#f04444',
-  green: '#29a85b',
-  yellow: '#f6cf3d',
-  blue: '#3297ed',
 }
 
 function roundedRect(
@@ -105,18 +111,28 @@ function drawTile(
   width: number,
   height: number,
   highlighted: boolean,
+  tileTheme: QuatroTileTheme,
 ): void {
+  const palette = quatroTileThemePalettes[tileTheme]
   const rect = { x: x - width / 2, y: y - height / 2, width, height }
   context.save()
   context.shadowColor = 'rgba(0,0,0,0.45)'
   context.shadowBlur = Math.max(2, width * 0.1)
   context.shadowOffsetY = Math.max(1, height * 0.05)
   roundedRect(context, rect, Math.max(4, width * 0.16))
-  context.fillStyle = '#f8fafc'
+  const front = context.createLinearGradient(
+    rect.x,
+    rect.y,
+    rect.x + rect.width,
+    rect.y + rect.height,
+  )
+  front.addColorStop(0, palette.frontTop)
+  front.addColorStop(1, palette.frontBottom)
+  context.fillStyle = front
   context.fill()
   context.shadowColor = 'transparent'
   context.lineWidth = highlighted ? 4 : 1.5
-  context.strokeStyle = highlighted ? '#ffd54a' : '#111827'
+  context.strokeStyle = highlighted ? '#ffd54a' : palette.frontBorder
   context.stroke()
 
   context.save()
@@ -125,12 +141,12 @@ function drawTile(
   context.scale(1, 1.35)
   context.beginPath()
   context.ellipse(0, 0, width * 0.34, height * 0.28, 0, 0, Math.PI * 2)
-  context.fillStyle = tileColors[tile.color]
+  context.fillStyle = palette.colors[tile.color]
   context.fill()
   context.restore()
 
-  context.fillStyle = '#ffffff'
-  context.strokeStyle = '#111827'
+  context.fillStyle = palette.frontText
+  context.strokeStyle = palette.frontBorder
   context.lineWidth = Math.max(1, width * 0.04)
   context.font = `800 ${Math.max(12, height * 0.44)}px system-ui`
   context.textAlign = 'center'
@@ -146,15 +162,10 @@ function drawTile(
   )
 
   if (tile.action) {
-    const glyph =
-      tile.action === 'swap'
-        ? '⇄'
-        : tile.action === 'push'
-          ? '⇩'
-          : '−2'
+    const glyph = quatroActionGlyph(tile.action)
     context.font = `900 ${Math.max(8, height * 0.18)}px system-ui`
-    context.fillStyle = '#111827'
-    context.strokeStyle = '#ffffff'
+    context.fillStyle = palette.frontBorder
+    context.strokeStyle = palette.frontTop
     context.lineWidth = 2
     context.strokeText(glyph, x + width * 0.24, y + height * 0.32)
     context.fillText(glyph, x + width * 0.24, y + height * 0.32)
@@ -168,19 +179,30 @@ function drawHiddenTile(
   y: number,
   width: number,
   height: number,
+  tileTheme: QuatroTileTheme,
 ): void {
+  const palette = quatroTileThemePalettes[tileTheme]
   const rect = { x: x - width / 2, y: y - height / 2, width, height }
   roundedRect(context, rect, 7)
-  context.fillStyle = '#111827'
+  const back = context.createLinearGradient(
+    rect.x,
+    rect.y,
+    rect.x + rect.width,
+    rect.y + rect.height,
+  )
+  back.addColorStop(0, palette.backTop)
+  back.addColorStop(1, palette.backBottom)
+  context.fillStyle = back
   context.fill()
   context.lineWidth = 2
-  context.strokeStyle = '#e5e4e2'
+  context.strokeStyle = palette.backBorder
   context.stroke()
-  context.font = `900 ${Math.max(9, height * 0.25)}px system-ui`
-  context.fillStyle = '#e5e4e2'
+  context.font =
+    `900 ${Math.max(7, Math.min(width * 0.2, height * 0.2))}px system-ui`
+  context.fillStyle = palette.backText
   context.textAlign = 'center'
   context.textBaseline = 'middle'
-  context.fillText('4', x, y)
+  context.fillText(palette.backLabel, x, y)
 }
 
 function handTileRects(
@@ -189,7 +211,7 @@ function handTileRects(
 ): QuatroRect[] {
   if (count <= 0) return []
   const tileHeight = Math.min(handRect.height * 0.84, 72)
-  const tileWidth = tileHeight * 0.66
+  const tileWidth = tileHeight
   const available = Math.max(0, handRect.width - tileWidth)
   const step = count === 1
     ? 0
@@ -213,10 +235,26 @@ function pointInRect(x: number, y: number, rect: QuatroRect): boolean {
   )
 }
 
+function findTileById(
+  state: QuatroState,
+  tileId: string,
+): QuatroTile | null {
+  for (const column of state.columns) {
+    const tile = column.find((candidate) => candidate.id === tileId)
+    if (tile) return tile
+  }
+  for (const player of state.players) {
+    const tile = player.hand.find((candidate) => candidate.id === tileId)
+    if (tile) return tile
+  }
+  return null
+}
+
 function drawScene(
   context: CanvasRenderingContext2D,
   layout: QuatroLayout,
   props: QuatroCanvasProps,
+  hiddenBoardTileIds: ReadonlySet<string>,
 ): void {
   context.clearRect(0, 0, layout.width, layout.height)
   const background = context.createLinearGradient(
@@ -259,8 +297,13 @@ function drawScene(
       : '#4b515c'
     context.stroke()
     for (const slot of layout.slots[column]) {
-      context.beginPath()
-      context.arc(slot.x, slot.y, slot.radius, 0, Math.PI * 2)
+      const slotRect = {
+        x: slot.x - slot.width / 2,
+        y: slot.y - slot.height / 2,
+        width: slot.width,
+        height: slot.height,
+      }
+      roundedRect(context, slotRect, Math.max(4, slot.width * 0.2))
       context.fillStyle = '#080a0d'
       context.fill()
       context.lineWidth = 1.5
@@ -268,15 +311,18 @@ function drawScene(
       context.stroke()
     }
     for (let row = 0; row < props.state.columns[column].length; row += 1) {
+      const tile = props.state.columns[column][row]
+      if (hiddenBoardTileIds.has(tile.id)) continue
       const slot = layout.slots[column][row]
       drawTile(
         context,
-        props.state.columns[column][row],
+        tile,
         slot.x,
         slot.y,
-        slot.radius * 1.45,
-        slot.radius * 1.7,
+        slot.width * 0.86,
+        slot.height * 0.86,
         false,
+        props.tileTheme,
       )
     }
   }
@@ -306,30 +352,15 @@ function drawScene(
     layout.bag.y + layout.bag.height * 0.78,
   )
 
-  const viewer = props.state.players.find(
-    (player) => player.id === props.viewerPlayerId,
-  )
   const opponent = props.state.players.find(
     (player) => player.id !== props.viewerPlayerId,
   )
-  if (viewer) {
-    const rects = handTileRects(layout.hands.near, viewer.hand.length)
-    for (let index = 0; index < viewer.hand.length; index += 1) {
-      const rect = rects[index]
-      drawTile(
-        context,
-        viewer.hand[index],
-        rect.x + rect.width / 2,
-        rect.y + rect.height / 2,
-        rect.width,
-        rect.height,
-        props.movableTileIds.includes(viewer.hand[index].id)
-          || props.selectedTileId === viewer.hand[index].id,
-      )
-    }
-  }
-  if (opponent) {
-    const rects = handTileRects(layout.hands.far, opponent.handCount)
+  const handCounts = quatroCanvasHandCounts(
+    props.state.players,
+    props.viewerPlayerId,
+  )
+  if (opponent && !props.hideStaticHands) {
+    const rects = handTileRects(layout.hands.far, handCounts.far)
     for (const rect of rects) {
       drawHiddenTile(
         context,
@@ -337,6 +368,7 @@ function drawScene(
         rect.y + rect.height / 2,
         rect.width,
         rect.height,
+        props.tileTheme,
       )
     }
   }
@@ -356,6 +388,22 @@ function drawScene(
     context.lineWidth = 7
     context.lineCap = 'round'
     context.stroke()
+
+    context.save()
+    context.shadowColor = '#ffe66d'
+    context.shadowBlur = 18
+    for (const frame of quatroWinningLineFrames(
+      layout,
+      props.state.winningLine,
+    )) {
+      roundedRect(context, frame, Math.max(5, frame.width * 0.18))
+      context.fillStyle = 'rgba(255, 230, 109, 0.16)'
+      context.fill()
+      context.lineWidth = 5
+      context.strokeStyle = '#ffe66d'
+      context.stroke()
+    }
+    context.restore()
   }
 }
 
@@ -364,6 +412,7 @@ function drawAnimationOverlay(
   layout: QuatroLayout,
   track: QuatroAnimationTrack,
   elapsed: number,
+  props: QuatroCanvasProps,
 ): void {
   const duration = Math.max(1, track.endsAt - track.startsAt)
   const progress = Math.max(
@@ -389,37 +438,125 @@ function drawAnimationOverlay(
     const event = track.event
     if (event.kind === 'drop') {
       const slot = layout.slots[event.column][event.row]
-      const startY = layout.board.y - 24
-      const eased = 1 - (1 - progress) ** 3
-      const bounce = Math.sin(progress * Math.PI * 3) * (1 - progress) * 12
-      context.beginPath()
-      context.arc(
-        slot.x,
-        startY + (slot.y - startY) * eased - bounce,
-        Math.max(7, slot.radius * 0.35),
-        0,
-        Math.PI * 2,
-      )
-      context.fillStyle = 'rgba(255,230,109,0.82)'
-      context.fill()
+      const point = quatroDropPoint(layout, event, progress)
+      const tray = layout.trays[event.column]
+      roundedRect(context, tray, Math.max(6, tray.width * 0.12))
+      context.strokeStyle = 'rgba(255,230,109,0.94)'
+      context.lineWidth = 4
+      context.stroke()
+      const tile = findTileById(props.state, event.tileId)
+      if (tile) {
+        drawTile(
+          context,
+          tile,
+          point.x,
+          point.y,
+          slot.width * 0.9,
+          slot.height * 0.9,
+          true,
+          props.tileTheme,
+        )
+      } else {
+        drawHiddenTile(
+          context,
+          point.x,
+          point.y,
+          slot.width * 0.9,
+          slot.height * 0.9,
+          props.tileTheme,
+        )
+      }
     }
   } else if (track.style === 'cross') {
     const event = track.event
     if (event.kind === 'swap') {
-      const first = layout.trays[event.columns[0]]
-      const second = layout.trays[event.columns[1]]
-      const firstX = first.x + first.width / 2
-      const secondX = second.x + second.width / 2
-      const y = layout.board.y + layout.board.height / 2
-      const arc = Math.sin(progress * Math.PI) * 45
-      context.beginPath()
-      context.moveTo(firstX, y - arc)
-      context.lineTo(firstX + (secondX - firstX) * progress, y - arc)
-      context.moveTo(secondX, y + arc)
-      context.lineTo(secondX + (firstX - secondX) * progress, y + arc)
-      context.strokeStyle = 'rgba(52,217,255,0.9)'
-      context.lineWidth = 8
+      const transforms = quatroSwapTrayTransforms(
+        layout,
+        event.columns,
+        progress,
+      )
+      transforms.forEach((transform, index) => {
+        const sourceTray = layout.trays[transform.sourceColumn]
+        roundedRect(context, transform, Math.max(6, transform.width * 0.12))
+        context.fillStyle = 'rgba(7,14,25,0.92)'
+        context.fill()
+        context.strokeStyle = index === 0 ? '#34d9ff' : '#ffe66d'
+        context.lineWidth = 5
+        context.stroke()
+        const tiles = event.trayTiles?.[index] ?? []
+        tiles.forEach((tile, row) => {
+          const sourceSlot = layout.slots[transform.sourceColumn][row]
+          drawTile(
+            context,
+            tile,
+            transform.x + transform.width / 2,
+            transform.y + sourceSlot.y - sourceTray.y,
+            sourceSlot.width * 0.86,
+            sourceSlot.height * 0.86,
+            true,
+            props.tileTheme,
+          )
+        })
+      })
+    }
+  } else if (track.style === 'push') {
+    const event = track.event
+    if (event.kind === 'push') {
+      const tray = layout.trays[event.column]
+      const arrow = quatroPushArrowGeometry(
+        layout,
+        event.column,
+        progress,
+      )
+      roundedRect(context, tray, Math.max(6, tray.width * 0.12))
+      context.strokeStyle = 'rgba(255,230,109,0.96)'
+      context.lineWidth = 5
       context.stroke()
+      context.beginPath()
+      context.moveTo(arrow.x, arrow.y - Math.max(18, tray.height * 0.12))
+      context.lineTo(arrow.x, arrow.y)
+      context.lineTo(arrow.x - 10, arrow.y - 12)
+      context.moveTo(arrow.x, arrow.y)
+      context.lineTo(arrow.x + 10, arrow.y - 12)
+      context.strokeStyle = '#ffe66d'
+      context.lineWidth = 7
+      context.stroke()
+
+      if (event.ejectedTileId) {
+        const flight = Math.max(0, (progress - 0.2) / 0.8)
+        const slot = layout.slots[event.column][0]
+        const x =
+          slot.x
+          + (bagCenter.x - slot.x) * flight
+        const y =
+          slot.y
+          + (bagCenter.y - slot.y) * flight
+          - Math.sin(flight * Math.PI) * 38
+        const tile =
+          event.ejectedTile
+          ?? findTileById(props.state, event.ejectedTileId)
+        if (tile) {
+          drawTile(
+            context,
+            tile,
+            x,
+            y,
+            slot.width * 0.86,
+            slot.height * 0.86,
+            true,
+            props.tileTheme,
+          )
+        } else {
+          drawHiddenTile(
+            context,
+            x,
+            y,
+            slot.width * 0.86,
+            slot.height * 0.86,
+            props.tileTheme,
+          )
+        }
+      }
     }
   } else if (track.style === 'pulse') {
     const scale = 1 + Math.sin(progress * Math.PI * 4) * 0.2
@@ -459,43 +596,69 @@ function drawAnimationOverlay(
     }
   } else {
     let from = bagCenter
+    let tileId = ''
+    let playerId = ''
+    if (track.event.kind === 'deal') {
+      const movement = track.event.movements[
+        track.movementIndex ?? 0
+      ]
+      tileId = movement?.tileId ?? ''
+      playerId = movement?.playerId ?? ''
+    } else if (
+      track.event.kind === 'draw'
+      || track.event.kind === 'returnToBag'
+      || track.event.kind === 'minus2Return'
+    ) {
+      playerId = track.event.playerId
+      tileId =
+        track.event.kind === 'minus2Return'
+          ? track.event.tileIds[track.movementIndex ?? 0]
+          : track.event.tileId
+    }
+    const handKey = quatroAnimationHandForPlayer(
+      props.viewerPlayerId,
+      playerId,
+    )
+    const hand = layout.hands[handKey]
     let to = {
-      x: layout.hands.near.x + layout.hands.near.width / 2,
-      y: layout.hands.near.y + layout.hands.near.height / 2,
+      x: hand.x + hand.width / 2,
+      y: hand.y + hand.height / 2,
     }
     if (
       track.event.kind === 'returnToBag'
       || track.event.kind === 'minus2Return'
-      || track.event.kind === 'push'
     ) {
       ;[from, to] = [to, from]
-    } else if (track.event.kind === 'deal') {
-      const movement = track.event.movements[
-        Math.min(
-          track.event.movements.length - 1,
-          Math.max(0, track.eventIndex),
-        )
-      ]
-      if (movement?.playerId.endsWith('2')) {
-        to = {
-          x: layout.hands.far.x + layout.hands.far.width / 2,
-          y: layout.hands.far.y + layout.hands.far.height / 2,
-        }
-      }
-    } else if (track.event.kind === 'drop') {
-      const slot = layout.slots[track.event.column][track.event.row]
-      from = { x: slot.x, y: layout.board.y }
-      to = { x: slot.x, y: slot.y }
     }
     const x = from.x + (to.x - from.x) * progress
     const y =
       from.y
       + (to.y - from.y) * progress
       - Math.sin(progress * Math.PI) * 24
-    context.beginPath()
-    context.arc(x, y, 8, 0, Math.PI * 2)
-    context.fillStyle = 'rgba(52,217,255,0.88)'
-    context.fill()
+    const tile = tileId ? findTileById(props.state, tileId) : null
+    const tileHeight = Math.min(hand.height * 0.78, 58)
+    const tileWidth = tileHeight
+    if (tile && handKey === 'near') {
+      drawTile(
+        context,
+        tile,
+        x,
+        y,
+        tileWidth,
+        tileHeight,
+        true,
+        props.tileTheme,
+      )
+    } else {
+      drawHiddenTile(
+        context,
+        x,
+        y,
+        tileWidth,
+        tileHeight,
+        props.tileTheme,
+      )
+    }
   }
   context.restore()
 }
@@ -507,7 +670,8 @@ export function QuatroCanvas(props: QuatroCanvasProps) {
   const playedSoundKeysRef = useRef(new Set<string>())
   const propsRef = useRef(props)
   const redrawRef = useRef<(() => void) | null>(null)
-  const transitionSequence = props.state.transitionSequence
+  const animationState = props.state
+  const transitionSequence = animationState.transitionSequence
   const animationSpeed = props.animationSpeed ?? props.state.animationSpeed
   const reducedMotion = props.reducedMotion ?? false
 
@@ -516,13 +680,16 @@ export function QuatroCanvas(props: QuatroCanvasProps) {
     if (!canvas) return
     const context = canvas.getContext('2d')
     if (!context) return
-    const initialProps = propsRef.current
-    const timeline = buildQuatroAnimationTimeline(initialProps.state.events, {
-      speed: animationSpeed,
-      reducedMotion,
-    })
+    const transition = buildQuatroAnimationTimelineForTransition(
+      animationState,
+      {
+        speed: animationSpeed,
+        reducedMotion,
+      },
+    )
+    const timeline = transition.timeline
     const startedAt = performance.now()
-    initialProps.onBlockingAnimationChange?.(timeline.durationMs > 0)
+    propsRef.current.onBlockingAnimationChange?.(timeline.durationMs > 0)
 
     const render = () => {
       frameRef.current = null
@@ -543,23 +710,37 @@ export function QuatroCanvas(props: QuatroCanvasProps) {
       const layout = createQuatroLayout(cssWidth, cssHeight)
       layoutRef.current = layout
       const liveProps = propsRef.current
-      drawScene(context, layout, liveProps)
       const elapsed = performance.now() - startedAt
+      drawScene(
+        context,
+        layout,
+        liveProps,
+        quatroActiveDropTileIds(timeline.tracks, elapsed),
+      )
       for (const track of timeline.tracks) {
-        if (elapsed < track.startsAt || elapsed > track.endsAt) continue
-        drawAnimationOverlay(context, layout, track, elapsed)
-        const soundKey =
-          `${transitionSequence}:${track.eventIndex}`
-        if (!playedSoundKeysRef.current.has(soundKey)) {
+        const soundKey = quatroSoundKey(transitionSequence, track)
+        if (
+          elapsed >= track.startsAt
+          && !playedSoundKeysRef.current.has(soundKey)
+        ) {
           playedSoundKeysRef.current.add(soundKey)
           const cue = soundCueForQuatroEvent(track.event)
           if (cue) liveProps.onSoundCue?.(cue)
         }
+        if (elapsed < track.startsAt || elapsed > track.endsAt) continue
+        drawAnimationOverlay(
+          context,
+          layout,
+          track,
+          elapsed,
+          liveProps,
+        )
       }
       if (elapsed < timeline.durationMs) {
         frameRef.current = requestAnimationFrame(render)
       } else {
         liveProps.onBlockingAnimationChange?.(false)
+        liveProps.onTransitionAnimationComplete?.(transitionSequence)
       }
     }
 
@@ -581,7 +762,7 @@ export function QuatroCanvas(props: QuatroCanvasProps) {
       redrawRef.current = null
       propsRef.current.onBlockingAnimationChange?.(false)
     }
-  }, [animationSpeed, reducedMotion, transitionSequence])
+  }, [animationSpeed, animationState, reducedMotion, transitionSequence])
 
   useEffect(() => {
     propsRef.current = props
@@ -598,18 +779,6 @@ export function QuatroCanvas(props: QuatroCanvasProps) {
     const x = (event.clientX - bounds.left) * (layout.width / bounds.width)
     const y = (event.clientY - bounds.top) * (layout.height / bounds.height)
 
-    const viewer = props.state.players.find(
-      (player) => player.id === props.viewerPlayerId,
-    )
-    if (viewer && pointInRect(x, y, layout.hands.near)) {
-      const rects = handTileRects(layout.hands.near, viewer.hand.length)
-      for (let index = rects.length - 1; index >= 0; index -= 1) {
-        if (pointInRect(x, y, rects[index])) {
-          props.onTileSelect(viewer.hand[index].id)
-          return
-        }
-      }
-    }
     const column = hitTestQuatroLayout(layout, x, y)
     if (column !== null) {
       props.onColumnSelect(column)

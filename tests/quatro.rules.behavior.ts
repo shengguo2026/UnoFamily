@@ -271,6 +271,58 @@ function winningBoard(
   assert.equal(next.winnerId, state.players[0].id)
   assert.equal(next.phase, 'gameOver')
   assert.deepEqual(next.events.map((event) => event.kind), ['drop', 'win'])
+  assert.deepEqual(next.log, [
+    {
+      kind: 'place',
+      playerId: state.players[0].id,
+      tile: { color: 'red', value: 4, action: null },
+      column: 3,
+    },
+    {
+      kind: 'win',
+      playerId: state.players[0].id,
+      match: 'color',
+      color: 'red',
+    },
+  ])
+}
+
+{
+  const firstTile = tile('trace-first', 'red', 1)
+  const secondTile = tile('trace-second', 'blue', 1)
+  const state = withBoard([], [firstTile])
+  state.players[1] = {
+    ...state.players[1],
+    hand: [secondTile],
+    handCount: 1,
+  }
+
+  const afterFirst = quatroPlaceTile(
+    state,
+    state.players[0].id,
+    firstTile.id,
+    0,
+    steadyRandom,
+  )
+  const afterSecond = quatroPlaceTile(
+    afterFirst,
+    state.players[1].id,
+    secondTile.id,
+    1,
+    steadyRandom,
+  )
+
+  assert.deepEqual(
+    afterSecond.log.map((entry) => ({
+      kind: entry.kind,
+      playerId: entry.playerId,
+    })),
+    [
+      { kind: 'place', playerId: state.players[0].id },
+      { kind: 'place', playerId: state.players[1].id },
+    ],
+    'the trace must retain public moves from both players',
+  )
 }
 
 {
@@ -326,9 +378,19 @@ function winningBoard(
     resolved.events.map((event) => event.kind),
     ['swap', 'win'],
   )
+  const swapEvent = resolved.events.find(
+    (event) => event.kind === 'swap',
+  )
+  assert.deepEqual(swapEvent?.columns, [3, 4])
   assert.deepEqual(
-    resolved.events.find((event) => event.kind === 'swap'),
-    { kind: 'swap', columns: [3, 4] },
+    swapEvent?.trayTiles?.map((column) =>
+      column.map((boardTile) => boardTile.id),
+    ),
+    [['swap-source-blue'], ['swap-source-red']],
+  )
+  assert.deepEqual(
+    resolved.log.map((entry) => entry.kind),
+    ['place', 'swap', 'win'],
   )
 }
 
@@ -355,6 +417,10 @@ function winningBoard(
   assert.deepEqual(
     resolved.events.slice(0, 2).map((event) => event.kind),
     ['drop', 'push'],
+  )
+  assert.deepEqual(
+    resolved.log.map((entry) => entry.kind),
+    ['place', 'push'],
   )
 
   const full = Array.from({ length: 6 }, (_, index) =>
@@ -443,6 +509,10 @@ function winningBoard(
     attacked.events.slice(0, 2).map((event) => event.kind),
     ['drop', 'minus2Return'],
   )
+  assert.deepEqual(
+    attacked.log.map((entry) => entry.kind),
+    ['place', 'minus2'],
+  )
   assert.equal(
     attacked.events.filter(
       (event) =>
@@ -513,6 +583,12 @@ function winningBoard(
     exchanged.events.map((event) => event.kind),
     ['returnToBag', 'draw'],
   )
+  assert.deepEqual(exchanged.log, [
+    {
+      kind: 'exchange',
+      playerId: blocked.players[0].id,
+    },
+  ])
 
   const noBagState = withBoard(fullColumns, [returned, otherA, otherB])
   noBagState.bag = []

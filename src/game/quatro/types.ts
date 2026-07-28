@@ -42,6 +42,42 @@ export interface QuatroWinningLine {
   cells: Array<{ column: number; row: number }>
 }
 
+export type QuatroTraceEntry =
+  | {
+      kind: 'place'
+      playerId: string
+      tile: Pick<QuatroTile, 'color' | 'value' | 'action'>
+      column: number
+    }
+  | {
+      kind: 'swap'
+      playerId: string
+      columns: [number, number]
+    }
+  | {
+      kind: 'push'
+      playerId: string
+      column: number
+      ejected: boolean
+    }
+  | {
+      kind: 'minus2'
+      playerId: string
+      targetPlayerId: string
+      returnedCount: 2
+    }
+  | {
+      kind: 'exchange'
+      playerId: string
+    }
+  | {
+      kind: 'win'
+      playerId: string
+      match: QuatroWinningLine['match']
+      color?: QuatroColor
+      value?: QuatroTile['value']
+    }
+
 export type QuatroAction =
   | { type: 'place'; playerId: string; tileId: string; column: number }
   | { type: 'selectSwapColumn'; playerId: string; column: number }
@@ -61,12 +97,17 @@ export type QuatroAnimationEvent =
       column: number
       row: number
     }
-  | { kind: 'swap'; columns: [number, number] }
+  | {
+      kind: 'swap'
+      columns: [number, number]
+      trayTiles?: [QuatroTile[], QuatroTile[]]
+    }
   | {
       kind: 'push'
       column: number
       tileId: string
       ejectedTileId: string | null
+      ejectedTile?: QuatroTile | null
     }
   | { kind: 'minus2Return'; playerId: string; tileIds: [string, string] }
   | { kind: 'returnToBag'; playerId: string; tileId: string }
@@ -103,5 +144,5 @@ export interface QuatroState {
   mode: GameMode
   aiDifficulty: AiDifficulty
   animationSpeed: AnimationSpeed
-  log: string[]
+  log: QuatroTraceEntry[]
 }

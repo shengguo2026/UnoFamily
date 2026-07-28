@@ -1,3 +1,8 @@
+import type {
+  QuatroPlayer,
+  QuatroWinningLine,
+} from '../../game/quatro/types'
+
 export interface QuatroRect {
   x: number
   y: number
@@ -8,7 +13,8 @@ export interface QuatroRect {
 export interface QuatroSlot {
   x: number
   y: number
-  radius: number
+  width: number
+  height: number
 }
 
 export interface QuatroLayout {
@@ -31,9 +37,9 @@ function makeTrayGeometry(board: QuatroRect): {
     (board.width - boardPadding * 2 - trayGap * 6) / 7
   const trayHeight = board.height - boardPadding * 2
   const slotStep = trayHeight / 6
-  const radius = Math.max(
-    8,
-    Math.min(trayWidth * 0.36, slotStep * 0.34),
+  const slotSize = Math.max(
+    24,
+    Math.min(trayWidth * 0.62, slotStep * 0.74),
   )
 
   const trays = Array.from({ length: 7 }, (_, column) => ({
@@ -46,7 +52,8 @@ function makeTrayGeometry(board: QuatroRect): {
     Array.from({ length: 6 }, (_, row) => ({
       x: tray.x + tray.width / 2,
       y: tray.y + tray.height - slotStep * (row + 0.5),
-      radius,
+      width: slotSize,
+      height: slotSize,
     })),
   )
   return { trays, slots }
@@ -131,16 +138,47 @@ export function hitTestQuatroLayout(
 ): number | null {
   for (let column = 0; column < layout.slots.length; column += 1) {
     for (const slot of layout.slots[column]) {
-      const deltaX = x - slot.x
-      const deltaY = y - slot.y
-      const hitRadius = Math.max(22, slot.radius)
+      const hitWidth = Math.max(44, slot.width)
+      const hitHeight = Math.max(44, slot.height)
       if (
-        deltaX * deltaX + deltaY * deltaY
-        <= hitRadius * hitRadius
+        x >= slot.x - hitWidth / 2
+        && x <= slot.x + hitWidth / 2
+        && y >= slot.y - hitHeight / 2
+        && y <= slot.y + hitHeight / 2
       ) {
         return column
       }
     }
   }
   return null
+}
+
+export function quatroWinningLineFrames(
+  layout: QuatroLayout,
+  line: QuatroWinningLine,
+): QuatroRect[] {
+  return line.cells.map((cell) => {
+    const slot = layout.slots[cell.column][cell.row]
+    const width = slot.width * 1.2
+    const height = slot.height * 1.2
+    return {
+      x: slot.x - width / 2,
+      y: slot.y - height / 2,
+      width,
+      height,
+    }
+  })
+}
+
+export function quatroCanvasHandCounts(
+  players: readonly QuatroPlayer[],
+  viewerPlayerId: string,
+): { near: 0; far: number } {
+  const opponent = players.find(
+    (player) => player.id !== viewerPlayerId,
+  )
+  return {
+    near: 0,
+    far: opponent?.handCount ?? 0,
+  }
 }
