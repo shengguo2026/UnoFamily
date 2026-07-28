@@ -125,7 +125,7 @@ export function QuatroTable({
         </div>
         <div>
           <span>{quatroText(language, 'bag')}</span>
-          <strong>{state.bag.length}</strong>
+          <strong>{state.bagCount ?? state.bag.length}</strong>
         </div>
       </div>
 

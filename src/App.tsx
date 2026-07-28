@@ -80,6 +80,7 @@ import { chooseMahjongAiAction, chooseMahjongDiscard, type MahjongAiAction } fro
 import { getMahjongHint } from './game/mahjong/hints'
 import { mahjongLogText, mahjongSelectedTileText, mahjongTileKeyText } from './game/mahjong/translation'
 import { chooseQuatroAiAction } from './game/quatro/ai'
+import { createPrivateQuatroState } from './game/quatro/privacy'
 import {
   createQuatroGame,
   quatroExchangeTile,
@@ -475,6 +476,7 @@ function App() {
   const pendingHostedGameRef = useRef<GameVariant | null>(null)
   const lastAiHardwareWaitKey = useRef<string | null>(null)
   const lastWinnerCelebrationKey = useRef<string | null>(null)
+  const lastAnimatedQuatroSequence = useRef<number | null>(null)
   const moreGamesTileRef = useRef<HTMLButtonElement | null>(null)
   const [sound] = useState<SoundManager | null>(() => (typeof window !== 'undefined' ? new SoundManager() : null))
   const navigateToScreen = useCallback((nextScreen: AppScreen) => {
@@ -638,6 +640,19 @@ function App() {
     wifiClient.current.publishGameSnapshots(snapshots)
   }, [])
 
+  const publishQuatroWifiSnapshots = useCallback((next: QuatroState) => {
+    const room = wifiStateRef.current.room
+    if (!room || !wifiClient.current) return
+    const snapshots: Record<string, WifiGameSnapshot> = {}
+    for (const player of room.players) {
+      snapshots[player.id] = {
+        quatroState: createPrivateQuatroState(next, player.id),
+        localPlayerId: player.id,
+      }
+    }
+    wifiClient.current.publishGameSnapshots(snapshots)
+  }, [])
+
   const updateState = useCallback((next: GameState, cue?: Parameters<SoundManager['play']>[0]) => {
     const previous = gameStateRef.current
     if (next.winnerId) startWinnerCelebration(next)
@@ -664,9 +679,53 @@ function App() {
     sound?.play(soundCueForMahjongTransition(previous, next, cue))
   }, [config.mode, publishMahjongWifiSnapshots, sound])
 
+  const updateQuatroState = useCallback((next: QuatroState) => {
+    quatroStateRef.current = next
+    setQuatroState(next)
+    setSelectedQuatroTileId(null)
+    const room = wifiStateRef.current.room
+    if (
+      next.mode === 'wifi'
+      && room
+      && wifiStateRef.current.clientId === room.hostId
+    ) {
+      publishQuatroWifiSnapshots(next)
+    }
+  }, [publishQuatroWifiSnapshots])
+
   const dispatchQuatroAction = useCallback((action: QuatroUiAction) => {
     const currentQuatro = quatroStateRef.current
     if (!currentQuatro || currentQuatro.winnerId) return
+    const room = wifiStateRef.current.room
+    const isRemoteClient =
+      currentQuatro.mode === 'wifi'
+      && room
+      && wifiStateRef.current.clientId !== room.hostId
+    if (isRemoteClient) {
+      if (action.type === 'place') {
+        wifiClient.current?.sendPlayerAction({
+          type: 'quatroPlace',
+          tileId: action.tileId,
+          column: action.column,
+        })
+      } else if (action.type === 'swapColumn') {
+        wifiClient.current?.sendPlayerAction({
+          type: 'quatroSwapColumn',
+          column: action.column,
+        })
+      } else if (action.type === 'emptyPush') {
+        wifiClient.current?.sendPlayerAction({
+          type: 'quatroEmptyPush',
+          pushOut: action.pushOut,
+        })
+      } else {
+        wifiClient.current?.sendPlayerAction({
+          type: 'quatroExchange',
+          tileId: action.tileId,
+        })
+      }
+      return
+    }
     const active = currentQuatro.players[currentQuatro.activePlayerIndex]
     let next: QuatroState
     if (action.type === 'place') {
@@ -699,9 +758,7 @@ function App() {
         runtimeQuatroRandom,
       )
     }
-    quatroStateRef.current = next
-    setQuatroState(next)
-    setSelectedQuatroTileId(null)
+    updateQuatroState(next)
     if (
       config.mode === 'hotseat'
       && next.activePlayerIndex !== currentQuatro.activePlayerIndex
@@ -709,7 +766,7 @@ function App() {
     ) {
       setRevealedPlayerId(null)
     }
-  }, [config.mode])
+  }, [config.mode, updateQuatroState])
 
   const current = state ? activePlayer(state) : null
   const activeMahjongPlayer = mahjongState?.players[mahjongState.activePlayerIndex] ?? null
@@ -787,6 +844,12 @@ function App() {
     }
     const active = quatroState.players[quatroState.activePlayerIndex]
     if (active.type !== 'ai') return
+    if (
+      quatroState.mode === 'wifi'
+      && (!wifiState.room || wifiState.clientId !== wifiState.room.hostId)
+    ) {
+      return
+    }
     const delay =
       quatroState.mode === 'spectacular'
         ? config.spectacularDelaySeconds * 1000
@@ -825,6 +888,8 @@ function App() {
     quatroHiddenHands,
     quatroState,
     screen,
+    wifiState.clientId,
+    wifiState.room,
   ])
 
   useEffect(() => {
@@ -1083,6 +1148,9 @@ function App() {
       setSelectedQuatroTileId(null)
       setState(null)
       gameStateRef.current = null
+      setQuatroState(null)
+      quatroStateRef.current = null
+      setSelectedQuatroTileId(null)
       setMahjongState(null)
       mahjongStateRef.current = null
       setPendingChoice(null)
@@ -1314,6 +1382,35 @@ function App() {
   }
 
   useEffect(() => {
+    if (
+      !isWifiHost
+      || !quatroState
+      || pendingWifiActions.length === 0
+      || isBlockingAnimationActive
+    ) {
+      return
+    }
+    const timer = window.setTimeout(() => {
+      const pending = pendingWifiActions[0]
+      const next = applyQuatroWifiAction(
+        quatroState,
+        pending.clientId,
+        pending.action,
+        runtimeQuatroRandom,
+      )
+      setPendingWifiActions((actions) => actions.slice(1))
+      if (next) updateQuatroState(next)
+    }, 0)
+    return () => window.clearTimeout(timer)
+  }, [
+    isBlockingAnimationActive,
+    isWifiHost,
+    pendingWifiActions,
+    quatroState,
+    updateQuatroState,
+  ])
+
+  useEffect(() => {
     if (!isWifiHost || !state || pendingWifiActions.length === 0 || isBlockingAnimationActive) return
     if (state.memoryActionEvent) return
     const timer = window.setTimeout(() => {
@@ -1387,6 +1484,39 @@ function App() {
       onGameSnapshot: (snapshot) => {
         const room = wifiStateRef.current.room
         if (room && wifiStateRef.current.clientId === room.hostId) return
+        if (snapshot.quatroState) {
+          const incomingSequence =
+            snapshot.quatroState.transitionSequence
+          const previousSequence = lastAnimatedQuatroSequence.current
+          const shouldAnimate =
+            previousSequence !== null
+            && incomingSequence > previousSequence
+          lastAnimatedQuatroSequence.current =
+            previousSequence === null
+              ? incomingSequence
+              : Math.max(previousSequence, incomingSequence)
+          const privateQuatro: QuatroState = {
+            ...snapshot.quatroState,
+            events: shouldAnimate
+              ? snapshot.quatroState.events
+              : [],
+          }
+          setWifiSnapshotPlayerId(snapshot.localPlayerId)
+          setQuatroState(privateQuatro)
+          quatroStateRef.current = privateQuatro
+          setSelectedQuatroTileId(null)
+          setState(null)
+          gameStateRef.current = null
+          setQuatroState(null)
+          quatroStateRef.current = null
+          setSelectedQuatroTileId(null)
+          setMahjongState(null)
+          mahjongStateRef.current = null
+          setPendingChoice(null)
+          setRevealedPlayerId(snapshot.localPlayerId)
+          navigateToScreen('table')
+          return
+        }
         if (snapshot.mahjongState) {
           const hadWifiMahjong = Boolean(mahjongStateRef.current && config.mode === 'wifi')
           const previousMahjongState = mahjongStateRef.current
@@ -1413,6 +1543,9 @@ function App() {
         gameStateRef.current = snapshot.state
         setMahjongState(null)
         mahjongStateRef.current = null
+        setQuatroState(null)
+        quatroStateRef.current = null
+        setSelectedQuatroTileId(null)
         setSelectedMahjongTileId(null)
         setPendingChoice(null)
         setRevealedPlayerId(snapshot.localPlayerId)
@@ -1428,6 +1561,10 @@ function App() {
         setMahjongState(null)
         mahjongStateRef.current = null
         setSelectedMahjongTileId(null)
+        setQuatroState(null)
+        quatroStateRef.current = null
+        setSelectedQuatroTileId(null)
+        lastAnimatedQuatroSequence.current = null
         setPendingChoice(null)
         setWifiSnapshotPlayerId(null)
         setPendingWifiActions([])
@@ -1467,6 +1604,13 @@ function App() {
     setMahjongState(null)
     mahjongStateRef.current = null
     setSelectedMahjongTileId(null)
+    setQuatroState(null)
+    quatroStateRef.current = null
+    setSelectedQuatroTileId(null)
+    setQuatroState(null)
+    quatroStateRef.current = null
+    setSelectedQuatroTileId(null)
+    lastAnimatedQuatroSequence.current = null
     setPendingChoice(null)
     setWifiSnapshotPlayerId(null)
     setPendingWifiActions([])
@@ -1481,13 +1625,21 @@ function App() {
     setMahjongState(null)
     mahjongStateRef.current = null
     setSelectedMahjongTileId(null)
+    setQuatroState(null)
+    quatroStateRef.current = null
+    setSelectedQuatroTileId(null)
+    lastAnimatedQuatroSequence.current = null
     setPendingChoice(null)
     setWifiSnapshotPlayerId(null)
     setPendingWifiActions([])
   }
 
   function resumeWifiSession() {
-    if (state?.config.mode !== 'wifi' && !(mahjongState && config.mode === 'wifi')) return
+    if (
+      state?.config.mode !== 'wifi'
+      && !(mahjongState && config.mode === 'wifi')
+      && !(quatroState && config.mode === 'wifi')
+    ) return
     setPendingChoice(null)
     setRevealedPlayerId(wifiSnapshotPlayerId ?? wifiState.clientId)
     navigateToScreen('table')
@@ -1509,6 +1661,38 @@ function App() {
         avatarId: avatarIds[(humans.length + index + 1) % avatarIds.length],
       })),
     ]
+    if (room.game === 'quatro') {
+      const game = createQuatroGame({
+        mode: 'wifi',
+        aiDifficulty: room.aiDifficulty,
+        avatarId: participants[0].avatarId,
+        random: runtimeQuatroRandom,
+      })
+      game.players = game.players.map((player, index) => ({
+        ...player,
+        id: participants[index].id,
+        name: participants[index].name,
+        type: participants[index].type,
+        aiDifficulty:
+          participants[index].type === 'ai'
+            ? room.aiDifficulty
+            : undefined,
+        avatarId: participants[index].avatarId,
+      })) as QuatroState['players']
+      setPendingChoice(null)
+      setState(null)
+      gameStateRef.current = null
+      setMahjongState(null)
+      mahjongStateRef.current = null
+      setSelectedMahjongTileId(null)
+      setSelectedQuatroTileId(null)
+      setRevealedPlayerId(wifiState.clientId)
+      setWifiSnapshotPlayerId(wifiState.clientId)
+      lastAnimatedQuatroSequence.current = null
+      navigateToScreen('table')
+      updateQuatroState(game)
+      return
+    }
     if (isMahjongGame(room.game)) {
       const game = createMahjongGame({
         mode: 'wifi',
@@ -2237,7 +2421,11 @@ function App() {
                 onCloseRoom={closeWifiRoom}
                 onResumeSession={resumeWifiSession}
                 onStartGame={startWifiGame}
-                canResumeSession={Boolean(wifiState.room && (state?.config.mode === 'wifi' || (mahjongState && config.mode === 'wifi')))}
+                canResumeSession={Boolean(wifiState.room && (
+                  state?.config.mode === 'wifi'
+                  || (mahjongState && config.mode === 'wifi')
+                  || (quatroState && config.mode === 'wifi')
+                ))}
               />
             )}
 
@@ -7818,6 +8006,54 @@ function applyWifiAction(state: GameState, clientId: string, action: WifiPlayerA
   if (action.type === 'passageSkipPair') return { state: passageSkipPair(state), sound: 'play' }
   if (action.type === 'passagePass') return { state: passagePassCard(state, action.cardId, action.faceDown), sound: 'play' }
   return null
+}
+
+function applyQuatroWifiAction(
+  state: QuatroState,
+  clientId: string,
+  action: WifiPlayerAction,
+  random: QuatroRandom,
+): QuatroState {
+  const active = state.players[state.activePlayerIndex]
+  if (active.id !== clientId) return state
+  try {
+    if (action.type === 'quatroPlace') {
+      return quatroPlaceTile(
+        state,
+        clientId,
+        action.tileId,
+        action.column,
+        random,
+      )
+    }
+    if (action.type === 'quatroSwapColumn') {
+      return quatroSelectSwapColumn(
+        state,
+        clientId,
+        action.column,
+        random,
+      )
+    }
+    if (action.type === 'quatroEmptyPush') {
+      return quatroResolveEmptyPush(
+        state,
+        clientId,
+        action.pushOut,
+        random,
+      )
+    }
+    if (action.type === 'quatroExchange') {
+      return quatroExchangeTile(
+        state,
+        clientId,
+        action.tileId,
+        random,
+      )
+    }
+  } catch {
+    return state
+  }
+  return state
 }
 
 function applyMahjongWifiAction(state: MahjongState, clientId: string, action: WifiPlayerAction): { state: MahjongState; sound?: Parameters<SoundManager['play']>[0] } | null {

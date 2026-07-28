@@ -1,6 +1,7 @@
 import type { AiDifficulty, AvatarId, GameState, GameVariant, PlayChoice } from '../game/types'
 import type { PassageTakeSource } from '../game/types'
 import type { MahjongClaimResponse, MahjongState } from '../game/mahjong/types'
+import type { PrivateQuatroState } from '../game/quatro/privacy'
 
 export type WifiStatus = 'idle' | 'connecting' | 'connected' | 'error'
 
@@ -26,6 +27,7 @@ export interface WifiRoomSnapshot {
 export interface WifiGameSnapshot {
   state?: GameState
   mahjongState?: MahjongState
+  quatroState?: PrivateQuatroState
   localPlayerId: string
 }
 
@@ -61,6 +63,10 @@ export type WifiPlayerAction =
   | { type: 'mahjongDeclareKong'; tileId?: string }
   | { type: 'mahjongPass' }
   | { type: 'mahjongClaim'; claimAction: Exclude<MahjongClaimResponse['action'], 'pass'>; tileIds: string[] }
+  | { type: 'quatroPlace'; tileId: string; column: number }
+  | { type: 'quatroSwapColumn'; column: number }
+  | { type: 'quatroEmptyPush'; pushOut: boolean }
+  | { type: 'quatroExchange'; tileId: string }
 
 export interface WifiClientState {
   clientId: string | null

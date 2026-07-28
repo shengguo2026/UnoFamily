@@ -11,5 +11,9 @@ const cleanGameBody = serverSource.match(/function cleanGame\(value\) \{([\s\S]*
 const missing = playableGames.filter((game) => !cleanGameBody.includes(`'${game}'`))
 
 assert.deepEqual(missing, [], `WiFi server cleanGame is missing playable game(s): ${missing.join(', ')}`)
+assert.equal(cleanGameBody.includes("value === 'quatro'"), true, 'WiFi server cleanGame is missing the password-gated Quatro game')
+
+const cleanMaxPlayersBody = serverSource.match(/function cleanMaxPlayers\(game, value\) \{([\s\S]*?)\n}/)?.[1] ?? ''
+assert.equal(cleanMaxPlayersBody.includes("if (game === 'quatro') return 2"), true, 'UNO Quatro WiFi rooms must always use exactly two seats')
 
 console.log('WiFi game allow-list test passed')

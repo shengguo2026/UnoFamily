@@ -301,7 +301,7 @@ function drawScene(
   )
   context.font = `900 ${Math.max(14, layout.bag.width * 0.24)}px system-ui`
   context.fillText(
-    String(props.state.bag.length),
+    String(props.state.bagCount ?? props.state.bag.length),
     layout.bag.x + layout.bag.width / 2,
     layout.bag.y + layout.bag.height * 0.78,
   )

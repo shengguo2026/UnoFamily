@@ -367,6 +367,7 @@ function clamp(value, min, max) {
 
 function cleanMaxPlayers(game, value) {
   const requested = Number(value) || 4
+  if (game === 'quatro') return 2
   if (game === 'mahjong' || game === 'guoUnoMahjong') return 4
   if (game === 'challenge') return clamp(requested, 2, 10)
   if (game === 'allWild') return clamp(requested, 2, 10)
@@ -504,7 +505,8 @@ async function readBoundedBody(request, limit) {
 }
 
 function cleanGame(value) {
-  return value === 'extreme' ||
+  return value === 'quatro' ||
+    value === 'extreme' ||
     value === 'flash' ||
     value === 'flip' ||
     value === 'flipExtreme' ||

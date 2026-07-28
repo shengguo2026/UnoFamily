@@ -77,6 +77,7 @@ export type QuatroAnimationEvent =
 export interface QuatroState {
   players: [QuatroPlayer, QuatroPlayer]
   bag: QuatroTile[]
+  bagCount?: number
   columns: [
     QuatroTile[],
     QuatroTile[],
