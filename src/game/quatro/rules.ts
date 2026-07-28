@@ -267,10 +267,12 @@ function refillPlayer(
   }
 }
 
-function finishNormalMove(
+function finishResolvedMove(
   state: QuatroState,
   playerId: string,
+  random: QuatroRandom,
 ): QuatroState {
+  void random
   const winningLine = findQuatroWinningLine(state.columns)
   if (winningLine) {
     return {
@@ -293,6 +295,7 @@ function finishNormalMove(
   const refill = refillPlayer(active, state.bag)
   players[state.activePlayerIndex] = refill.player
   const nextActivePlayerIndex = state.activePlayerIndex === 0 ? 1 : 0
+  const clearsMinus2Refill = state.minus2RefillPlayerId === active.id
   return {
     ...state,
     players,
@@ -300,6 +303,12 @@ function finishNormalMove(
     activePlayerIndex: nextActivePlayerIndex,
     selectedTileId: null,
     selectedColumn: null,
+    pendingSwapFirstColumn: null,
+    pendingPushColumn: null,
+    pendingPushTileId: null,
+    minus2RefillPlayerId: clearsMinus2Refill
+      ? null
+      : state.minus2RefillPlayerId,
     exchangeDrawnTileId: null,
     events: [
       ...state.events,
@@ -318,9 +327,8 @@ export function quatroPlaceTile(
   playerId: string,
   tileId: string,
   columnIndex: number,
-  _random: QuatroRandom,
+  random: QuatroRandom,
 ): QuatroState {
-  void _random
   const active = state.players[state.activePlayerIndex]
   if (state.phase !== 'playing') throw new Error('Quatro is not accepting placements')
   if (active.id !== playerId) throw new Error('It is not this player’s turn')
@@ -380,7 +388,7 @@ export function quatroPlaceTile(
     const pushed = {
       ...placed,
       bag: previousBottom
-        ? [...placed.bag, previousBottom]
+        ? shuffleQuatroTiles([...placed.bag, previousBottom], random)
         : placed.bag,
       events: [
         ...placed.events,
@@ -392,8 +400,232 @@ export function quatroPlaceTile(
         },
       ],
     }
-    return finishNormalMove(pushed, playerId)
+    return finishResolvedMove(pushed, playerId, random)
+  }
+  if (playedTile.action === 'minus2') {
+    const opponentIndex = state.activePlayerIndex === 0 ? 1 : 0
+    const opponent = players[opponentIndex]
+    if (opponent.hand.length < 2) {
+      throw new Error('Minus 2 requires two opponent tiles')
+    }
+    const remainingHand = [...opponent.hand]
+    const removed: QuatroTile[] = []
+    for (let count = 0; count < 2; count += 1) {
+      const selectedIndex = random.int(remainingHand.length)
+      if (
+        !Number.isInteger(selectedIndex)
+        || selectedIndex < 0
+        || selectedIndex >= remainingHand.length
+      ) {
+        throw new RangeError('Quatro random source returned an invalid index')
+      }
+      const [selected] = remainingHand.splice(selectedIndex, 1)
+      removed.push(selected)
+    }
+    const attackedPlayers: [QuatroPlayer, QuatroPlayer] = [
+      placed.players[0],
+      placed.players[1],
+    ]
+    attackedPlayers[opponentIndex] = {
+      ...opponent,
+      hand: remainingHand,
+      handCount: remainingHand.length,
+    }
+    const attacked: QuatroState = {
+      ...placed,
+      players: attackedPlayers,
+      bag: shuffleQuatroTiles([...placed.bag, ...removed], random),
+      minus2RefillPlayerId: opponent.id,
+      events: [
+        ...placed.events,
+        {
+          kind: 'minus2Return',
+          playerId: opponent.id,
+          tileIds: [removed[0].id, removed[1].id],
+        },
+      ],
+    }
+    return finishResolvedMove(attacked, playerId, random)
   }
 
-  return finishNormalMove(placed, playerId)
+  return finishResolvedMove(placed, playerId, random)
+}
+
+function assertActivePlayer(state: QuatroState, playerId: string): void {
+  if (state.players[state.activePlayerIndex].id !== playerId) {
+    throw new Error('It is not this player’s turn')
+  }
+}
+
+export function quatroSelectSwapColumn(
+  state: QuatroState,
+  playerId: string,
+  columnIndex: number,
+  random: QuatroRandom,
+): QuatroState {
+  assertActivePlayer(state, playerId)
+  if (
+    !Number.isInteger(columnIndex)
+    || columnIndex < 0
+    || columnIndex >= COLUMN_COUNT
+  ) {
+    throw new Error('Swap column is outside the board')
+  }
+  if (state.phase === 'selectSwapFirst') {
+    return {
+      ...state,
+      phase: 'selectSwapSecond',
+      pendingSwapFirstColumn: columnIndex,
+      transitionSequence: state.transitionSequence + 1,
+      events: [],
+    }
+  }
+  if (
+    state.phase !== 'selectSwapSecond'
+    || state.pendingSwapFirstColumn === null
+  ) {
+    throw new Error('A Swap action is not awaiting this selection')
+  }
+  if (columnIndex === state.pendingSwapFirstColumn) {
+    throw new Error('Swap requires two different columns')
+  }
+
+  const firstColumn = state.pendingSwapFirstColumn
+  const columns = cloneColumns(state.columns)
+  ;[columns[firstColumn], columns[columnIndex]] = [
+    columns[columnIndex],
+    columns[firstColumn],
+  ]
+  return finishResolvedMove(
+    {
+      ...state,
+      columns,
+      phase: 'playing',
+      transitionSequence: state.transitionSequence + 1,
+      events: [{ kind: 'swap', columns: [firstColumn, columnIndex] }],
+    },
+    playerId,
+    random,
+  )
+}
+
+export function quatroResolveEmptyPush(
+  state: QuatroState,
+  playerId: string,
+  pushOut: boolean,
+  random: QuatroRandom,
+): QuatroState {
+  assertActivePlayer(state, playerId)
+  if (
+    state.phase !== 'chooseEmptyPush'
+    || state.pendingPushColumn === null
+    || state.pendingPushTileId === null
+  ) {
+    throw new Error('An empty-column Push choice is not pending')
+  }
+  const columnIndex = state.pendingPushColumn
+  const column = state.columns[columnIndex]
+  const pushedTile = column.find(
+    (candidate) => candidate.id === state.pendingPushTileId,
+  )
+  if (!pushedTile || column.length !== 1) {
+    throw new Error('The pending Push tile is no longer in its column')
+  }
+
+  const columns = cloneColumns(state.columns)
+  let bag = state.bag
+  if (pushOut) {
+    columns[columnIndex] = []
+    bag = shuffleQuatroTiles([...bag, pushedTile], random)
+  }
+  return finishResolvedMove(
+    {
+      ...state,
+      columns,
+      bag,
+      phase: 'playing',
+      transitionSequence: state.transitionSequence + 1,
+      events: [
+        {
+          kind: 'push',
+          column: columnIndex,
+          tileId: pushedTile.id,
+          ejectedTileId: pushOut ? pushedTile.id : null,
+        },
+      ],
+    },
+    playerId,
+    random,
+  )
+}
+
+export function quatroExchangeTile(
+  state: QuatroState,
+  playerId: string,
+  tileId: string,
+  random: QuatroRandom,
+): QuatroState {
+  assertActivePlayer(state, playerId)
+  if (state.phase !== 'playing') {
+    throw new Error('Tiles can only be exchanged during normal play')
+  }
+  if (quatroPlayableTileIds(state, playerId).length > 0) {
+    throw new Error('A tile can only be exchanged when no tile is playable')
+  }
+
+  const active = state.players[state.activePlayerIndex]
+  const returnedIndex = active.hand.findIndex(
+    (candidate) => candidate.id === tileId,
+  )
+  if (returnedIndex < 0) {
+    throw new Error('Tile is not in the active player’s hand')
+  }
+  const hand = active.hand.filter((_, index) => index !== returnedIndex)
+  const exchangeBag = [...state.bag, active.hand[returnedIndex]]
+  const drawIndex = random.int(exchangeBag.length)
+  if (
+    !Number.isInteger(drawIndex)
+    || drawIndex < 0
+    || drawIndex >= exchangeBag.length
+  ) {
+    throw new RangeError('Quatro random source returned an invalid index')
+  }
+  const [drawn] = exchangeBag.splice(drawIndex, 1)
+  hand.push(drawn)
+  const players: [QuatroPlayer, QuatroPlayer] = [
+    state.players[0],
+    state.players[1],
+  ]
+  players[state.activePlayerIndex] = {
+    ...active,
+    hand,
+    handCount: hand.length,
+  }
+  const exchanged: QuatroState = {
+    ...state,
+    players,
+    bag: exchangeBag,
+    exchangeDrawnTileId: drawn.id,
+    transitionSequence: state.transitionSequence + 1,
+    events: [
+      { kind: 'returnToBag', playerId, tileId },
+      { kind: 'draw', playerId, tileId: drawn.id },
+    ],
+  }
+
+  if (quatroLegalColumns(exchanged, drawn.id).length > 0) {
+    return exchanged
+  }
+  return finishResolvedMove(exchanged, playerId, random)
+}
+
+export function quatroCompleteTurn(
+  state: QuatroState,
+  random: QuatroRandom,
+): QuatroState {
+  return finishResolvedMove(
+    state,
+    state.players[state.activePlayerIndex].id,
+    random,
+  )
 }

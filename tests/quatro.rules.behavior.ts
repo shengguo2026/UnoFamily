@@ -3,8 +3,11 @@ import {
   createQuatroGame,
   findQuatroWinningLine,
   quatroLegalColumns,
+  quatroExchangeTile,
   quatroPlaceTile,
   quatroPlayableTileIds,
+  quatroResolveEmptyPush,
+  quatroSelectSwapColumn,
 } from '../src/game/quatro/rules'
 import type {
   QuatroColor,
@@ -268,6 +271,264 @@ function winningBoard(
   assert.equal(next.winnerId, state.players[0].id)
   assert.equal(next.phase, 'gameOver')
   assert.deepEqual(next.events.map((event) => event.kind), ['drop', 'win'])
+}
+
+{
+  const swapTile = tile('swap-action', 'yellow', 5, 'swap')
+  const state = withBoard(
+    [
+      [tile('row-red-0', 'red', 0)],
+      [tile('row-red-1', 'red', 1)],
+      [tile('row-red-2', 'red', 2)],
+      [tile('swap-source-blue', 'blue', 4)],
+      [tile('swap-source-red', 'red', 5)],
+    ],
+    [swapTile],
+  )
+  const placed = quatroPlaceTile(
+    state,
+    state.players[0].id,
+    swapTile.id,
+    6,
+    steadyRandom,
+  )
+  assert.equal(placed.phase, 'selectSwapFirst')
+  assert.equal(placed.winnerId, null)
+
+  const first = quatroSelectSwapColumn(
+    placed,
+    placed.players[0].id,
+    3,
+    steadyRandom,
+  )
+  assert.equal(first.phase, 'selectSwapSecond')
+  assert.equal(first.pendingSwapFirstColumn, 3)
+  assert.throws(() =>
+    quatroSelectSwapColumn(first, first.players[0].id, 3, steadyRandom),
+  )
+
+  const resolved = quatroSelectSwapColumn(
+    first,
+    first.players[0].id,
+    4,
+    steadyRandom,
+  )
+  assert.deepEqual(
+    resolved.columns[3].map((boardTile) => boardTile.id),
+    ['swap-source-red'],
+  )
+  assert.deepEqual(
+    resolved.columns[4].map((boardTile) => boardTile.id),
+    ['swap-source-blue'],
+  )
+  assert.equal(resolved.winnerId, state.players[0].id)
+  assert.deepEqual(
+    resolved.events.map((event) => event.kind),
+    ['swap', 'win'],
+  )
+  assert.deepEqual(
+    resolved.events.find((event) => event.kind === 'swap'),
+    { kind: 'swap', columns: [3, 4] },
+  )
+}
+
+{
+  const pushTile = tile('push-action', 'red', 3, 'push')
+  const bottom = tile('pushed-out', 'blue', 1)
+  const retained = tile('retained', 'red', 2)
+  const state = withBoard([[bottom, retained]], [pushTile])
+  const resolved = quatroPlaceTile(
+    state,
+    state.players[0].id,
+    pushTile.id,
+    0,
+    steadyRandom,
+  )
+  assert.deepEqual(
+    resolved.columns[0].map((boardTile) => boardTile.id),
+    [retained.id, pushTile.id],
+  )
+  assert.equal(
+    resolved.bag.filter((bagTile) => bagTile.id === bottom.id).length,
+    1,
+  )
+  assert.deepEqual(
+    resolved.events.slice(0, 2).map((event) => event.kind),
+    ['drop', 'push'],
+  )
+
+  const full = Array.from({ length: 6 }, (_, index) =>
+    tile(
+      `full-push-${index}`,
+      index === 5 ? 'red' : 'blue',
+      (index % 6) as QuatroTile['value'],
+    ),
+  )
+  const fullState = withBoard([full], [pushTile])
+  const fullResolved = quatroPlaceTile(
+    fullState,
+    fullState.players[0].id,
+    pushTile.id,
+    0,
+    steadyRandom,
+  )
+  assert.equal(fullResolved.columns[0].length, 6)
+  assert.equal(
+    fullResolved.bag.filter((bagTile) => bagTile.id === full[0].id).length,
+    1,
+  )
+
+  const emptyState = withBoard([], [pushTile])
+  const pending = quatroPlaceTile(
+    emptyState,
+    emptyState.players[0].id,
+    pushTile.id,
+    0,
+    steadyRandom,
+  )
+  assert.equal(pending.phase, 'chooseEmptyPush')
+  const kept = quatroResolveEmptyPush(
+    pending,
+    pending.players[0].id,
+    false,
+    steadyRandom,
+  )
+  assert.equal(kept.columns[0].length, 1)
+
+  const pendingAgain = quatroPlaceTile(
+    emptyState,
+    emptyState.players[0].id,
+    pushTile.id,
+    0,
+    steadyRandom,
+  )
+  const pushedOut = quatroResolveEmptyPush(
+    pendingAgain,
+    pendingAgain.players[0].id,
+    true,
+    steadyRandom,
+  )
+  assert.equal(pushedOut.columns[0].length, 0)
+  assert.equal(
+    pushedOut.bag.filter((bagTile) => bagTile.id === pushTile.id).length,
+    1,
+  )
+}
+
+{
+  const minus2 = tile('minus-two', 'yellow', 4, 'minus2')
+  const state = withBoard([], [minus2])
+  const opponentIds = state.players[1].hand.map((handTile) => handTile.id)
+  const alwaysFirst: QuatroRandom = { int: () => 0 }
+  const attacked = quatroPlaceTile(
+    state,
+    state.players[0].id,
+    minus2.id,
+    0,
+    alwaysFirst,
+  )
+  assert.equal(attacked.activePlayerIndex, 1)
+  assert.equal(attacked.players[1].hand.length, 1)
+  assert.equal(attacked.players[1].handCount, 1)
+  assert.equal(attacked.minus2RefillPlayerId, state.players[1].id)
+  assert.equal(
+    attacked.players[1].hand.some((handTile) => handTile.id === opponentIds[0]),
+    false,
+  )
+  assert.equal(
+    attacked.players[1].hand.some((handTile) => handTile.id === opponentIds[1]),
+    false,
+  )
+  assert.deepEqual(
+    attacked.events.slice(0, 2).map((event) => event.kind),
+    ['drop', 'minus2Return'],
+  )
+  assert.equal(
+    attacked.events.filter(
+      (event) =>
+        event.kind === 'draw'
+        && event.playerId === state.players[1].id,
+    ).length,
+    0,
+    'the penalized player must begin the next turn with one tile',
+  )
+
+  const remaining = attacked.players[1].hand[0]
+  const completed = quatroPlaceTile(
+    attacked,
+    attacked.players[1].id,
+    remaining.id,
+    3,
+    alwaysFirst,
+  )
+  assert.equal(completed.players[1].hand.length, 3)
+  assert.equal(completed.minus2RefillPlayerId, null)
+}
+
+{
+  const playable = tile('playable', 'red', 1)
+  const playableState = withBoard([], [playable])
+  assert.throws(() =>
+    quatroExchangeTile(
+      playableState,
+      playableState.players[0].id,
+      playable.id,
+      steadyRandom,
+    ),
+  )
+
+  const fullColumns = Array.from({ length: 7 }, (_, column) =>
+    Array.from({ length: 6 }, (_, row) =>
+      tile(
+        `blocked-${column}-${row}`,
+        (['red', 'green', 'yellow', 'blue'][(column + row * 2) % 4] as QuatroColor),
+        ((column * 2 + row * 3) % 6) as QuatroTile['value'],
+      ),
+    ),
+  )
+  const returned = tile('returned', 'red', 1)
+  const otherA = tile('other-a', 'green', 2)
+  const otherB = tile('other-b', 'yellow', 3)
+  const replacement = tile('replacement-push', 'red', 4, 'push')
+  const blocked = withBoard(fullColumns, [returned, otherA, otherB])
+  blocked.bag = [replacement]
+  assert.deepEqual(
+    quatroPlayableTileIds(blocked, blocked.players[0].id),
+    [],
+  )
+
+  const exchanged = quatroExchangeTile(
+    blocked,
+    blocked.players[0].id,
+    returned.id,
+    { int: () => 0 },
+  )
+  assert.equal(exchanged.activePlayerIndex, 0)
+  assert.equal(exchanged.exchangeDrawnTileId, replacement.id)
+  assert.deepEqual(
+    quatroPlayableTileIds(exchanged, exchanged.players[0].id),
+    [replacement.id],
+  )
+  assert.deepEqual(
+    exchanged.events.map((event) => event.kind),
+    ['returnToBag', 'draw'],
+  )
+
+  const noBagState = withBoard(fullColumns, [returned, otherA, otherB])
+  noBagState.bag = []
+  const sameTileBack = quatroExchangeTile(
+    noBagState,
+    noBagState.players[0].id,
+    returned.id,
+    { int: () => 0 },
+  )
+  assert.equal(sameTileBack.players[0].hand.length, 3)
+  assert.equal(sameTileBack.players[0].handCount, 3)
+  assert.equal(sameTileBack.activePlayerIndex, 1)
+  assert.deepEqual(
+    sameTileBack.events.slice(0, 2).map((event) => event.kind),
+    ['returnToBag', 'draw'],
+  )
 }
 
 console.log('UNO Quatro rules behavior tests passed')
