@@ -172,6 +172,15 @@ export const soundEventMap: Record<SoundCue, SoundCue> = {
   mahjongPong: 'mahjongPong',
   mahjongKong: 'mahjongKong',
   mahjongWin: 'mahjongWin',
+  quatroBagShake: 'quatroBagShake',
+  quatroDeal: 'quatroDeal',
+  quatroDrop: 'quatroDrop',
+  quatroSwap: 'quatroSwap',
+  quatroPush: 'quatroPush',
+  quatroMinus2: 'quatroMinus2',
+  quatroReturn: 'quatroReturn',
+  quatroDraw: 'quatroDraw',
+  quatroWin: 'quatroWin',
   hardware: 'hardware',
   launcher: 'launcher',
   launcherBuild: 'launcherBuild',
@@ -504,7 +513,7 @@ interface SoundProfile {
   stagger?: number
 }
 
-const soundProfiles: Record<SoundCue, SoundProfile> = {
+export const soundProfiles: Record<SoundCue, SoundProfile> = {
   deal: { frequencies: [280, 360], duration: 0.2, noteLength: 0.16, gain: 0.75, type: 'triangle' },
   play: { frequencies: [420], duration: 0.16, noteLength: 0.13, gain: 0.62, type: 'triangle' },
   draw: { frequencies: [210], duration: 0.18, noteLength: 0.14, gain: 0.62, type: 'sine' },
@@ -532,6 +541,15 @@ const soundProfiles: Record<SoundCue, SoundProfile> = {
   mahjongPong: { frequencies: [330, 330, 494], duration: 0.36, noteLength: 0.13, gain: 0.74, type: 'triangle', stagger: 0.07 },
   mahjongKong: { frequencies: [220, 330, 440, 660], duration: 0.5, noteLength: 0.2, gain: 0.78, type: 'triangle', stagger: 0.045 },
   mahjongWin: { frequencies: [110, 220, 329.63, 440, 659.25], duration: 1.2, noteLength: 1.05, gain: 0.26, type: 'sine', stagger: 0 },
+  quatroBagShake: { frequencies: [118, 146, 108, 154, 122, 164], duration: 0.72, noteLength: 0.07, gain: 0.58, type: 'triangle', stagger: 0.09 },
+  quatroDeal: { frequencies: [310, 430, 320, 445], duration: 0.34, noteLength: 0.075, gain: 0.6, type: 'triangle', stagger: 0.07 },
+  quatroDrop: { frequencies: [520, 330], duration: 0.23, noteLength: 0.1, gain: 0.66, type: 'triangle', stagger: 0.045 },
+  quatroSwap: { frequencies: [260, 520, 610, 305], duration: 0.55, noteLength: 0.2, gain: 0.64, type: 'sine', stagger: 0.08 },
+  quatroPush: { frequencies: [105, 86, 320], duration: 0.42, noteLength: 0.16, gain: 0.78, type: 'triangle', stagger: 0.055 },
+  quatroMinus2: { frequencies: [420, 310, 390, 260], duration: 0.5, noteLength: 0.13, gain: 0.72, type: 'sawtooth', stagger: 0.1 },
+  quatroReturn: { frequencies: [510, 390, 270], duration: 0.3, noteLength: 0.09, gain: 0.56, type: 'sine', stagger: 0.05 },
+  quatroDraw: { frequencies: [240, 360, 510], duration: 0.3, noteLength: 0.09, gain: 0.58, type: 'triangle', stagger: 0.05 },
+  quatroWin: { frequencies: [392, 523.25, 659.25, 783.99, 1046.5], duration: 0.82, noteLength: 0.22, gain: 0.84, type: 'triangle', stagger: 0.1 },
   hardware: { frequencies: [120, 240, 360], duration: 0.34, noteLength: 0.18, gain: 0.78, type: 'sawtooth' },
   launcher: { frequencies: [160, 110, 260], duration: 0.34, noteLength: 0.22, gain: 0.82, type: 'sawtooth' },
   launcherBuild: { frequencies: [105, 145, 190, 245], duration: 0.46, noteLength: 0.16, gain: 0.72, type: 'sawtooth' },
