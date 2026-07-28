@@ -4,6 +4,10 @@ import './App.css'
 import { GameCanvas } from './components/GameCanvas'
 import { MoreGamesTile } from './components/MoreGamesTile'
 import { MoreGamesUnlockModal } from './components/MoreGamesUnlockModal'
+import {
+  QuatroTable,
+  type QuatroUiAction,
+} from './components/quatro/QuatroTable'
 import { MahjongTable3D } from './components/mahjong/MahjongTable3D'
 import { deriveMahjongAnimationTransition } from './components/mahjong/mahjongAnimations'
 import {
@@ -75,11 +79,24 @@ import { shouldAiCatchUno, shouldAiChallengeLiar } from './game/ai'
 import { chooseMahjongAiAction, chooseMahjongDiscard, type MahjongAiAction } from './game/mahjong/ai'
 import { getMahjongHint } from './game/mahjong/hints'
 import { mahjongLogText, mahjongSelectedTileText, mahjongTileKeyText } from './game/mahjong/translation'
+import { chooseQuatroAiAction } from './game/quatro/ai'
+import {
+  createQuatroGame,
+  quatroExchangeTile,
+  quatroPlaceTile,
+  quatroResolveEmptyPush,
+  quatroSelectSwapColumn,
+} from './game/quatro/rules'
 import {
   quatroActionReference,
   quatroRuleSections,
   quatroStrategySections,
+  quatroText,
 } from './game/quatro/translation'
+import type {
+  QuatroRandom,
+  QuatroState,
+} from './game/quatro/types'
 import {
   createMahjongGame,
   mahjongClaim,
@@ -395,6 +412,15 @@ function normalizeAudioVolume(value: unknown, fallback: number): number {
   return Number.isFinite(numberValue) ? Math.max(0, Math.min(1, numberValue)) : fallback
 }
 
+const runtimeQuatroRandom: QuatroRandom = {
+  int(maxExclusive) {
+    if (!Number.isInteger(maxExclusive) || maxExclusive <= 0) {
+      throw new RangeError('Quatro random range must be positive')
+    }
+    return Math.floor(Math.random() * maxExclusive)
+  },
+}
+
 function loadMahjongVisualTheme(): MahjongVisualTheme {
   if (typeof window === 'undefined') return defaultMahjongVisualTheme
   try {
@@ -421,6 +447,8 @@ function App() {
   const [mahjongVisualTheme, setMahjongVisualTheme] = useState<MahjongVisualTheme>(() => loadMahjongVisualTheme())
   const [state, setState] = useState<GameState | null>(null)
   const [mahjongState, setMahjongState] = useState<MahjongState | null>(null)
+  const [quatroState, setQuatroState] = useState<QuatroState | null>(null)
+  const [selectedQuatroTileId, setSelectedQuatroTileId] = useState<string | null>(null)
   const [selectedMahjongTileId, setSelectedMahjongTileId] = useState<string | null>(null)
   const [pendingChoice, setPendingChoice] = useState<PendingChoiceState | null>(null)
   const [teamPassMode, setTeamPassMode] = useState(false)
@@ -442,6 +470,7 @@ function App() {
   const wifiStateRef = useRef<WifiClientState>(initialWifiClientState())
   const gameStateRef = useRef<GameState | null>(null)
   const mahjongStateRef = useRef<MahjongState | null>(null)
+  const quatroStateRef = useRef<QuatroState | null>(null)
   const screenRef = useRef(screen)
   const pendingHostedGameRef = useRef<GameVariant | null>(null)
   const lastAiHardwareWaitKey = useRef<string | null>(null)
@@ -635,8 +664,76 @@ function App() {
     sound?.play(soundCueForMahjongTransition(previous, next, cue))
   }, [config.mode, publishMahjongWifiSnapshots, sound])
 
+  const dispatchQuatroAction = useCallback((action: QuatroUiAction) => {
+    const currentQuatro = quatroStateRef.current
+    if (!currentQuatro || currentQuatro.winnerId) return
+    const active = currentQuatro.players[currentQuatro.activePlayerIndex]
+    let next: QuatroState
+    if (action.type === 'place') {
+      next = quatroPlaceTile(
+        currentQuatro,
+        active.id,
+        action.tileId,
+        action.column,
+        runtimeQuatroRandom,
+      )
+    } else if (action.type === 'swapColumn') {
+      next = quatroSelectSwapColumn(
+        currentQuatro,
+        active.id,
+        action.column,
+        runtimeQuatroRandom,
+      )
+    } else if (action.type === 'emptyPush') {
+      next = quatroResolveEmptyPush(
+        currentQuatro,
+        active.id,
+        action.pushOut,
+        runtimeQuatroRandom,
+      )
+    } else {
+      next = quatroExchangeTile(
+        currentQuatro,
+        active.id,
+        action.tileId,
+        runtimeQuatroRandom,
+      )
+    }
+    quatroStateRef.current = next
+    setQuatroState(next)
+    setSelectedQuatroTileId(null)
+    if (
+      config.mode === 'hotseat'
+      && next.activePlayerIndex !== currentQuatro.activePlayerIndex
+      && !next.winnerId
+    ) {
+      setRevealedPlayerId(null)
+    }
+  }, [config.mode])
+
   const current = state ? activePlayer(state) : null
   const activeMahjongPlayer = mahjongState?.players[mahjongState.activePlayerIndex] ?? null
+  const activeQuatroPlayer = quatroState?.players[
+    quatroState.activePlayerIndex
+  ] ?? null
+  const quatroHiddenHands = Boolean(
+    quatroState
+      && config.mode === 'hotseat'
+      && activeQuatroPlayer?.type === 'human'
+      && revealedPlayerId !== activeQuatroPlayer.id
+      && !quatroState.winnerId,
+  )
+  const quatroViewerPlayerId = quatroState
+    ? config.mode === 'single'
+      ? quatroState.players[0].id
+      : config.mode === 'hotseat'
+        ? quatroHiddenHands
+          ? null
+          : activeQuatroPlayer?.id ?? null
+        : config.mode === 'wifi'
+          ? wifiSnapshotPlayerId ?? wifiState.clientId ?? null
+          : null
+    : null
   const mahjongHotSeatControlPlayerId = mahjongState && config.mode === 'hotseat' ? localMahjongControlPlayerId(mahjongState, config.mode, undefined) : null
   const mahjongHiddenHands = Boolean(
     mahjongState &&
@@ -656,6 +753,9 @@ function App() {
   const isWifiHost = Boolean(wifiState.room && wifiState.clientId === wifiState.room.hostId)
   const hotSeatTurnKey = state?.config.mode === 'hotseat' ? `${state.currentRound}:${state.activePlayerIndex}` : ''
   const mahjongHotSeatTurnKey = mahjongState && config.mode === 'hotseat' ? `${mahjongState.currentRound}:${mahjongState.phase}:${mahjongState.activePlayerIndex}:${mahjongHotSeatControlPlayerId ?? ''}` : ''
+  const quatroHotSeatTurnKey = quatroState && config.mode === 'hotseat'
+    ? String(quatroState.activePlayerIndex)
+    : ''
 
   useEffect(() => {
     if (!hotSeatTurnKey) return
@@ -668,6 +768,64 @@ function App() {
     const timer = window.setTimeout(() => setRevealedPlayerId(null), 0)
     return () => window.clearTimeout(timer)
   }, [mahjongHotSeatTurnKey])
+
+  useEffect(() => {
+    if (!quatroHotSeatTurnKey) return
+    const timer = window.setTimeout(() => setRevealedPlayerId(null), 0)
+    return () => window.clearTimeout(timer)
+  }, [quatroHotSeatTurnKey])
+
+  useEffect(() => {
+    if (
+      !quatroState
+      || screen !== 'table'
+      || quatroState.winnerId
+      || isBlockingAnimationActive
+      || quatroHiddenHands
+    ) {
+      return
+    }
+    const active = quatroState.players[quatroState.activePlayerIndex]
+    if (active.type !== 'ai') return
+    const delay =
+      quatroState.mode === 'spectacular'
+        ? config.spectacularDelaySeconds * 1000
+        : 650
+    const timer = window.setTimeout(() => {
+      const latest = quatroStateRef.current
+      if (
+        !latest
+        || latest.transitionSequence !== quatroState.transitionSequence
+      ) {
+        return
+      }
+      const aiAction = chooseQuatroAiAction(latest, runtimeQuatroRandom)
+      if (!aiAction) return
+      if (aiAction.type === 'place') {
+        dispatchQuatroAction(aiAction)
+      } else if (aiAction.type === 'selectSwap') {
+        dispatchQuatroAction({
+          type: 'swapColumn',
+          column: aiAction.column,
+        })
+      } else if (aiAction.type === 'resolveEmptyPush') {
+        dispatchQuatroAction({
+          type: 'emptyPush',
+          pushOut: aiAction.pushOut,
+        })
+      } else {
+        dispatchQuatroAction(aiAction)
+      }
+    }, delay)
+    return () => window.clearTimeout(timer)
+  }, [
+    config.spectacularDelaySeconds,
+    dispatchQuatroAction,
+    isBlockingAnimationActive,
+    quatroHiddenHands,
+    quatroState,
+    screen,
+  ])
 
   useEffect(() => {
     if (!state || pendingChoice || hiddenHands || state.winnerId || isBlockingAnimationActive) return
@@ -913,6 +1071,27 @@ function App() {
 
   function startGame() {
     resetWinnerCelebration()
+    if (config.game === 'quatro') {
+      const game = createQuatroGame({
+        mode: config.mode,
+        aiDifficulty: config.aiDifficulty,
+        avatarId: config.avatarId,
+        random: runtimeQuatroRandom,
+      })
+      setQuatroState(game)
+      quatroStateRef.current = game
+      setSelectedQuatroTileId(null)
+      setState(null)
+      gameStateRef.current = null
+      setMahjongState(null)
+      mahjongStateRef.current = null
+      setPendingChoice(null)
+      setRevealedPlayerId(
+        config.mode === 'hotseat' ? null : game.players[0].id,
+      )
+      navigateToScreen('table')
+      return
+    }
     if (isMahjongGame(config.game)) {
       const game = createMahjongGame({ mode: config.mode, aiDifficulty: config.aiDifficulty })
       lastAiHardwareWaitKey.current = null
@@ -943,6 +1122,25 @@ function App() {
 
   function startNewSession() {
     resetWinnerCelebration()
+    if (config.game === 'quatro') {
+      const game = createQuatroGame({
+        mode: config.mode,
+        aiDifficulty: config.aiDifficulty,
+        avatarId: config.avatarId,
+        random: runtimeQuatroRandom,
+      })
+      setQuatroState(game)
+      quatroStateRef.current = game
+      setSelectedQuatroTileId(null)
+      setState(null)
+      gameStateRef.current = null
+      setMahjongState(null)
+      mahjongStateRef.current = null
+      setRevealedPlayerId(
+        config.mode === 'hotseat' ? null : game.players[0].id,
+      )
+      return
+    }
     if (isMahjongGame(config.game)) {
       const game = createMahjongGame({ mode: config.mode, aiDifficulty: config.aiDifficulty })
       setMahjongState(game)
@@ -957,6 +1155,9 @@ function App() {
     const game = createGame(config)
     setMahjongState(null)
     mahjongStateRef.current = null
+    setQuatroState(null)
+    quatroStateRef.current = null
+    setSelectedQuatroTileId(null)
     setSelectedMahjongTileId(null)
     lastAiHardwareWaitKey.current = null
     setState(game)
@@ -968,7 +1169,11 @@ function App() {
 
   function stopLocalSessionAndOpenSetup() {
     resetWinnerCelebration()
-    if (state?.config.mode === 'wifi' || (mahjongState && config.mode === 'wifi')) {
+    if (
+      state?.config.mode === 'wifi'
+      || (mahjongState && config.mode === 'wifi')
+      || (quatroState && config.mode === 'wifi')
+    ) {
       navigateToScreen('setup')
       return
     }
@@ -976,6 +1181,9 @@ function App() {
     gameStateRef.current = null
     setMahjongState(null)
     mahjongStateRef.current = null
+    setQuatroState(null)
+    quatroStateRef.current = null
+    setSelectedQuatroTileId(null)
     setSelectedMahjongTileId(null)
     setPendingChoice(null)
     setSkipBoDiscardPileIndex(null)
@@ -1501,10 +1709,10 @@ function App() {
 
             <section className="setup-panel">
               <h2>{t(language, 'players')}</h2>
-              {config.game === 'teams' || isMahjongGame(config.game) || config.game === 'dice' ? (
+              {config.game === 'teams' || isMahjongGame(config.game) || config.game === 'dice' || config.game === 'quatro' ? (
                 <div className="field-row">
                   <span>{t(language, 'totalPlayers')}</span>
-                  <strong>{config.game === 'dice' ? 2 : 4}</strong>
+                  <strong>{config.game === 'dice' || config.game === 'quatro' ? 2 : 4}</strong>
                 </div>
               ) : config.game === 'party' || usesWidePlayerOptions(config.game) ? (
                 <label className="field-row">
@@ -1534,7 +1742,7 @@ function App() {
                   <strong>{Math.min(config.playerCount, 4)}</strong>
                 </label>
               )}
-              {isMahjongGame(config.game) ? (
+              {config.game !== 'quatro' && (isMahjongGame(config.game) ? (
                 <div className="field-row">
                   <span>{mahjongLabel(language, 'ruleProfile')}</span>
                   <strong>{mahjongLabel(language, 'standard')}</strong>
@@ -1564,8 +1772,8 @@ function App() {
                   </select>
                   <strong>{config.startingHandSize}</strong>
                 </label>
-              )}
-              {isMahjongGame(config.game) ? (
+              ))}
+              {config.game !== 'quatro' && (isMahjongGame(config.game) ? (
                 <div className="field-row">
                   <span>{t(language, 'sessionTarget')}</span>
                   <strong>{mahjongLabel(language, 'winRound')}</strong>
@@ -1595,7 +1803,7 @@ function App() {
                   </select>
                   <strong>{config.targetScore}</strong>
                 </label>
-              )}
+              ))}
               <label className="field-row">
                 <span>{t(language, 'aiDifficulty')}</span>
                 <select
@@ -2062,6 +2270,100 @@ function App() {
                 </span>
               </label>
             </section>}
+          </div>
+        </section>
+      )}
+
+      {screen === 'table' && quatroState && (
+        <section className="table-screen quatro-table-screen">
+          <header className="table-toolbar">
+            <button
+              className="ghost-button"
+              type="button"
+              onClick={stopLocalSessionAndOpenSetup}
+            >
+              {t(language, 'setup')}
+            </button>
+            <div className="table-title-block">
+              <div className="table-title-text">
+                <strong>{quatroText(language, 'gameTitle')}</strong>
+                <span>{modeName(language, config.mode)}</span>
+              </div>
+              <button
+                className="ghost-button rules-button compact-rules"
+                type="button"
+                onClick={() => setRulesOpen(true)}
+              >
+                {t(language, 'rules')}
+              </button>
+            </div>
+            <LanguagePicker
+              language={language}
+              onChange={setLanguage}
+              compact
+            />
+            <ThemeToggle
+              language={language}
+              theme={theme}
+              onChange={setTheme}
+              compact
+            />
+            <label className="sound-control">
+              <input
+                type="checkbox"
+                checked={audioSettings.soundEffectsEnabled}
+                onChange={(event) =>
+                  updateAudioSettings({
+                    soundEffectsEnabled: event.target.checked,
+                  })
+                }
+              />
+              {t(language, 'sound')}
+            </label>
+            <input
+              className="volume"
+              type="range"
+              min="0"
+              max="1"
+              step="0.05"
+              value={audioSettings.masterVolume}
+              aria-label={
+                language === 'zh'
+                  ? '音量'
+                  : language === 'de'
+                    ? 'Lautstärke'
+                    : 'Volume'
+              }
+              onChange={(event) =>
+                updateAudioSettings({
+                  masterVolume: Number(event.target.value),
+                })
+              }
+            />
+          </header>
+          <div className="table-wrap quatro-table-wrap">
+            <QuatroTable
+              state={quatroState}
+              language={language}
+              viewerPlayerId={quatroViewerPlayerId}
+              selectedTileId={selectedQuatroTileId}
+              hiddenHands={quatroHiddenHands}
+              animationLocked={isBlockingAnimationActive}
+              reducedMotion={config.reducedMotion}
+              onSelectTile={setSelectedQuatroTileId}
+              onAction={dispatchQuatroAction}
+              onRevealHand={() =>
+                activeQuatroPlayer
+                  ? setRevealedPlayerId(activeQuatroPlayer.id)
+                  : undefined
+              }
+              onOpenSetup={stopLocalSessionAndOpenSetup}
+              onNewGame={startNewSession}
+              onBlockingAnimationChange={(blocking) =>
+                setAnimationLockReason(blocking ? 'quatro' : null)
+              }
+              onSoundCue={(cue) => playSoundAfterUnlock(sound, cue)}
+            />
           </div>
         </section>
       )}
@@ -8029,10 +8331,12 @@ function gameTitle(game: GameVariant, h2oSplash = false): string {
   if (game === 'guoNeighborMatch') return "Guo's Exclusive Uno Neighbor Match"
   if (game === 'guoHiLo') return "Guo's Exclusive Uno Hi-Lo"
   if (game === 'guoPassage') return "Guo's Exclusive Uno Passage"
+  if (game === 'quatro') return 'UNO Quatro'
   return 'Uno Classic'
 }
 
 function gameNumberLabel(game: GameVariant): string {
+  if (game === 'quatro') return 'More games'
   if (game === 'extreme') return 'Game 2'
   if (game === 'flash') return 'Game 3'
   if (game === 'flip') return 'Game 4'

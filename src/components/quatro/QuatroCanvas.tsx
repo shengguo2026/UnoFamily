@@ -505,18 +505,24 @@ export function QuatroCanvas(props: QuatroCanvasProps) {
   const layoutRef = useRef<QuatroLayout | null>(null)
   const frameRef = useRef<number | null>(null)
   const playedSoundKeysRef = useRef(new Set<string>())
+  const propsRef = useRef(props)
+  const redrawRef = useRef<(() => void) | null>(null)
+  const transitionSequence = props.state.transitionSequence
+  const animationSpeed = props.animationSpeed ?? props.state.animationSpeed
+  const reducedMotion = props.reducedMotion ?? false
 
   useEffect(() => {
     const canvas = canvasRef.current
     if (!canvas) return
     const context = canvas.getContext('2d')
     if (!context) return
-    const timeline = buildQuatroAnimationTimeline(props.state.events, {
-      speed: props.animationSpeed ?? props.state.animationSpeed,
-      reducedMotion: props.reducedMotion ?? false,
+    const initialProps = propsRef.current
+    const timeline = buildQuatroAnimationTimeline(initialProps.state.events, {
+      speed: animationSpeed,
+      reducedMotion,
     })
     const startedAt = performance.now()
-    props.onBlockingAnimationChange?.(timeline.durationMs > 0)
+    initialProps.onBlockingAnimationChange?.(timeline.durationMs > 0)
 
     const render = () => {
       frameRef.current = null
@@ -536,23 +542,24 @@ export function QuatroCanvas(props: QuatroCanvasProps) {
       context.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0)
       const layout = createQuatroLayout(cssWidth, cssHeight)
       layoutRef.current = layout
-      drawScene(context, layout, props)
+      const liveProps = propsRef.current
+      drawScene(context, layout, liveProps)
       const elapsed = performance.now() - startedAt
       for (const track of timeline.tracks) {
         if (elapsed < track.startsAt || elapsed > track.endsAt) continue
         drawAnimationOverlay(context, layout, track, elapsed)
         const soundKey =
-          `${props.state.transitionSequence}:${track.eventIndex}`
+          `${transitionSequence}:${track.eventIndex}`
         if (!playedSoundKeysRef.current.has(soundKey)) {
           playedSoundKeysRef.current.add(soundKey)
           const cue = soundCueForQuatroEvent(track.event)
-          if (cue) props.onSoundCue?.(cue)
+          if (cue) liveProps.onSoundCue?.(cue)
         }
       }
       if (elapsed < timeline.durationMs) {
         frameRef.current = requestAnimationFrame(render)
       } else {
-        props.onBlockingAnimationChange?.(false)
+        liveProps.onBlockingAnimationChange?.(false)
       }
     }
 
@@ -564,14 +571,21 @@ export function QuatroCanvas(props: QuatroCanvasProps) {
     }
     const observer = new ResizeObserver(scheduleRender)
     observer.observe(canvas)
+    redrawRef.current = scheduleRender
     scheduleRender()
     return () => {
       if (frameRef.current !== null) {
         cancelAnimationFrame(frameRef.current)
       }
       observer.disconnect()
-      props.onBlockingAnimationChange?.(false)
+      redrawRef.current = null
+      propsRef.current.onBlockingAnimationChange?.(false)
     }
+  }, [animationSpeed, reducedMotion, transitionSequence])
+
+  useEffect(() => {
+    propsRef.current = props
+    redrawRef.current?.()
   }, [props])
 
   function handlePointerDown(

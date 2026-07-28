@@ -5140,3 +5140,253 @@
     font-size: 11px;
   }
 }
+
+.quatro-table {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  gap: 0.75rem;
+  width: min(100%, 96rem);
+  min-width: 0;
+  height: 100%;
+  margin: 0 auto;
+  overflow: hidden;
+}
+
+.quatro-status {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.7rem 1rem;
+  border: 1px solid color-mix(in srgb, var(--line) 75%, #e5e4e2);
+  border-radius: 1rem;
+  background: color-mix(in srgb, var(--panel) 88%, #111827);
+}
+
+.quatro-status > div {
+  display: grid;
+  gap: 0.12rem;
+}
+
+.quatro-status span {
+  color: var(--muted);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.quatro-canvas-wrap {
+  position: relative;
+  min-width: 0;
+  min-height: 24rem;
+  overflow: hidden;
+  border-radius: 1.25rem;
+  box-shadow: 0 1rem 3rem rgb(0 0 0 / 35%);
+}
+
+.quatro-canvas {
+  display: block;
+  width: 100%;
+  height: clamp(26rem, calc(100dvh - 19rem), 48rem);
+  min-width: 0;
+  touch-action: manipulation;
+}
+
+.quatro-controls {
+  display: grid;
+  grid-template-columns: minmax(13rem, 0.7fr) minmax(0, 2fr);
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.quatro-hint {
+  padding: 0.8rem 1rem;
+  border: 1px solid var(--line);
+  border-radius: 1rem;
+  background: var(--panel);
+}
+
+.quatro-hint p {
+  margin: 0.35rem 0 0;
+  color: var(--muted);
+}
+
+.quatro-hand {
+  display: flex;
+  gap: 0.55rem;
+  min-width: 0;
+  overflow-x: auto;
+  padding: 0.45rem;
+  border: 1px solid var(--line);
+  border-radius: 1rem;
+  background: color-mix(in srgb, var(--panel) 90%, #e5e4e2);
+}
+
+.quatro-hand button {
+  display: grid;
+  flex: 1 0 6.25rem;
+  min-height: 3.5rem;
+  place-items: center;
+  border: 2px solid var(--line);
+  border-radius: 0.85rem;
+  background: var(--panel-strong);
+  color: var(--text);
+}
+
+.quatro-hand button.quatro-legal {
+  border-color: #f4cf4f;
+  box-shadow: 0 0 0.8rem rgb(244 207 79 / 35%);
+}
+
+.quatro-hand button.selected {
+  border-color: #34d9ff;
+  transform: translateY(-0.2rem);
+}
+
+.quatro-hand button:disabled {
+  cursor: default;
+  opacity: 0.48;
+}
+
+.quatro-hand small {
+  color: var(--muted);
+}
+
+.quatro-choice-actions,
+.quatro-winner-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.75rem;
+}
+
+.quatro-choice-actions {
+  grid-column: 1 / -1;
+}
+
+.quatro-privacy-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 8;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  background: rgb(3 7 18 / 88%);
+  backdrop-filter: blur(1rem);
+}
+
+.quatro-privacy-overlay .modal-panel {
+  max-width: 31rem;
+  text-align: center;
+}
+
+.quatro-winner-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 12;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  padding: 1rem;
+  background:
+    radial-gradient(circle at 50% 35%, rgb(37 99 235 / 26%), transparent 42%),
+    rgb(3 7 18 / 78%);
+  backdrop-filter: blur(0.35rem);
+}
+
+.quatro-winner-panel {
+  position: relative;
+  z-index: 2;
+  width: min(100%, 34rem);
+  padding: clamp(1.4rem, 4vw, 2.5rem);
+  border: 2px solid #e5e4e2;
+  border-radius: 1.4rem;
+  background: linear-gradient(145deg, #171a20, #05070b);
+  color: #f8fafc;
+  text-align: center;
+  box-shadow: 0 1.5rem 5rem rgb(0 0 0 / 55%);
+}
+
+.quatro-winner-panel h2 {
+  margin: 0.35rem 0 1.4rem;
+  font-size: clamp(1.8rem, 6vw, 3.5rem);
+}
+
+.quatro-fireworks {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.quatro-firework {
+  --angle: calc(var(--firework-index) * 47deg);
+  position: absolute;
+  left: calc(14% + var(--firework-burst) * 18%);
+  top: calc(18% + (var(--firework-burst) % 2) * 22%);
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 50%;
+  background: hsl(calc(var(--firework-index) * 43deg) 92% 65%);
+  box-shadow: 0 0 0.8rem currentColor;
+  animation: quatro-firework-burst 1.35s ease-out infinite;
+  animation-delay: calc(var(--firework-burst) * 0.18s + var(--firework-index) * -0.025s);
+}
+
+.quatro-firework.static {
+  left: calc(8% + (var(--firework-index) % 6) * 17%);
+  top: calc(10% + (var(--firework-index) % 4) * 23%);
+  animation: none;
+  opacity: 0.75;
+}
+
+@keyframes quatro-firework-burst {
+  0% {
+    opacity: 0;
+    transform: translate(0, 0) scale(0.2);
+  }
+
+  18% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+    transform:
+      rotate(var(--angle))
+      translateX(clamp(3rem, 10vw, 8rem))
+      scale(1);
+  }
+}
+
+@media (max-width: 700px) {
+  .quatro-table {
+    gap: 0.45rem;
+  }
+
+  .quatro-status {
+    padding: 0.5rem 0.7rem;
+  }
+
+  .quatro-canvas-wrap {
+    min-height: 22rem;
+  }
+
+  .quatro-canvas {
+    height: min(32rem, calc(100dvh - 16.5rem));
+    min-height: 22rem;
+  }
+
+  .quatro-controls {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .quatro-hand button {
+    flex-basis: 5.4rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .quatro-firework {
+    animation: none;
+  }
+}
