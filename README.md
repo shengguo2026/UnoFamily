@@ -98,6 +98,23 @@ Open <http://localhost:5202> after both services start.
 
 Do not expose these development services directly to the public internet.
 
+## Password-gated games
+
+The “More games” entry verifies passwords in the local room server. Real
+passwords are never placed in the browser bundle or committed to the
+repository.
+
+Generate a salted verifier from a masked terminal prompt:
+
+```bash
+npm run secret:more-game -- --game quatro
+```
+
+Before starting `npm run wifi`, set `UNO_MORE_GAMES_VERIFIERS` to the JSON
+object printed by that command. The value contains a one-way salted verifier,
+not the entered password. Keep the environment value private and do not expose
+the local development services to the public internet.
+
 ## Stopping and restarting
 
 On Windows, close the two service windows. On macOS and Linux, return to the

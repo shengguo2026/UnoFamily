@@ -8,6 +8,8 @@
     "wifi": "node server/local-wifi-server.mjs",
     "build": "npm run check:audio && tsc -b && vite build",
     "check:audio": "node scripts/check-audio-assets.mjs",
+    "secret:more-game": "node scripts/create-more-game-verifier.mjs",
+    "test:more-games": "node tests/moreGamesAccess.behavior.mjs && node tests/moreGamesVerifierScript.behavior.mjs",
     "lint": "eslint .",
     "preview": "vite preview"
   },

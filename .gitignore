@@ -31,5 +31,7 @@ coverage/
 .env
 .env.*
 !.env.example
+.uno-family-secrets.json
+more-games-secrets.*
 *.zip
 .agents/

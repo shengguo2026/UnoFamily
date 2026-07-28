@@ -1,15 +1,29 @@
 import { createHash, randomBytes } from 'node:crypto'
 import { createServer } from 'node:http'
+import {
+  createAttemptLimiter,
+  parseMoreGameVerifiers,
+  verifyMoreGamePassword,
+} from './more-games-auth.mjs'
 
 const PORT = Number(process.env.UNO_WIFI_PORT ?? 5203)
 const CLOSE_FRAME = '__UNO_CLOSE_FRAME__'
 const AVATARS = new Set(['explorer', 'teacher', 'magician', 'builder', 'musician', 'gardener', 'pilot', 'chef', 'scientist', 'artist'])
 const rooms = new Map()
+const moreGameVerifiers = parseMoreGameVerifiers(process.env.UNO_MORE_GAMES_VERIFIERS)
+const moreGameAttemptLimiter = createAttemptLimiter()
+const UNLOCK_BODY_LIMIT_BYTES = 1_024
+const UNLOCK_MIN_RESPONSE_MS = 80
 
 const server = createServer((request, response) => {
   if (request.url === '/health') {
     response.writeHead(200, { 'content-type': 'application/json' })
     response.end(JSON.stringify({ ok: true, rooms: rooms.size }))
+    return
+  }
+
+  if (request.url === '/api/more-games/unlock') {
+    void handleMoreGamesUnlock(request, response)
     return
   }
 
@@ -382,6 +396,111 @@ function cleanMaxPlayers(game, value) {
   if (game === 'guoHiLo' || game === 'guoPassage') return clamp(requested, 2, 4)
   if (game === 'guoMemory' || game === 'guoMemoryAction' || game === 'guoTripleMemory' || game === 'guoTripleMemoryAction' || game === 'guoNeighborMatch') return clamp(requested, 2, 4)
   return game === 'party' ? clamp(requested, 2, 16) : clamp(requested, 2, 4)
+}
+
+async function handleMoreGamesUnlock(request, response) {
+  const startedAt = Date.now()
+  const origin = allowedOrigin(request)
+  const headers = responseHeaders(origin)
+
+  if (request.method === 'OPTIONS' && origin) {
+    response.writeHead(204, {
+      ...headers,
+      'access-control-allow-methods': 'POST, OPTIONS',
+      'access-control-allow-headers': 'Content-Type',
+    })
+    response.end()
+    return
+  }
+
+  let password = null
+  let validRequest = Boolean(
+    request.method === 'POST' &&
+    origin &&
+    String(request.headers['content-type'] ?? '').toLowerCase().startsWith('application/json'),
+  )
+
+  if (validRequest) {
+    const body = await readBoundedBody(request, UNLOCK_BODY_LIMIT_BYTES)
+    if (body === null) {
+      validRequest = false
+    } else {
+      try {
+        const parsed = JSON.parse(body)
+        const keys = parsed && typeof parsed === 'object' && !Array.isArray(parsed) ? Object.keys(parsed) : []
+        if (keys.length === 1 && keys[0] === 'password' && typeof parsed.password === 'string') {
+          password = parsed.password
+        } else {
+          validRequest = false
+        }
+      } catch {
+        validRequest = false
+      }
+    }
+  }
+
+  const clientKey = request.socket.remoteAddress ?? 'unknown'
+  const allowedAttempt = validRequest && moreGameAttemptLimiter.allow(clientKey)
+  const gameId = allowedAttempt
+    ? await verifyMoreGamePassword(password, moreGameVerifiers)
+    : null
+
+  const remainingDelay = UNLOCK_MIN_RESPONSE_MS - (Date.now() - startedAt)
+  if (remainingDelay > 0) await new Promise((resolve) => setTimeout(resolve, remainingDelay))
+
+  if (!gameId) {
+    response.writeHead(401, headers)
+    response.end(JSON.stringify({ ok: false }))
+    return
+  }
+
+  response.writeHead(200, headers)
+  response.end(JSON.stringify({ ok: true, gameId }))
+}
+
+function allowedOrigin(request) {
+  const rawOrigin = request.headers.origin
+  const rawHost = request.headers.host
+  if (typeof rawOrigin !== 'string' || typeof rawHost !== 'string') return null
+
+  try {
+    const origin = new URL(rawOrigin)
+    const requestHost = new URL(`http://${rawHost}`)
+    if (!['http:', 'https:'].includes(origin.protocol)) return null
+    if (origin.hostname !== requestHost.hostname) return null
+    if (!['5202', '4173'].includes(origin.port)) return null
+    return origin.origin
+  } catch {
+    return null
+  }
+}
+
+function responseHeaders(origin) {
+  return {
+    'content-type': 'application/json',
+    'cache-control': 'no-store',
+    ...(origin ? {
+      'access-control-allow-origin': origin,
+      vary: 'Origin',
+    } : {}),
+  }
+}
+
+async function readBoundedBody(request, limit) {
+  const chunks = []
+  let size = 0
+  let oversized = false
+
+  for await (const chunk of request) {
+    size += chunk.length
+    if (size > limit) {
+      oversized = true
+    } else {
+      chunks.push(chunk)
+    }
+  }
+
+  return oversized ? null : Buffer.concat(chunks).toString('utf8')
 }
 
 function cleanGame(value) {

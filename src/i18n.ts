@@ -122,6 +122,11 @@ type TranslationKey =
   | 'deckCount'
   | 'drawPile'
   | 'none'
+  | 'moreGamesUnlockTitle'
+  | 'moreGamesPassword'
+  | 'moreGamesConfirm'
+  | 'moreGamesChecking'
+  | 'moreGamesFailure'
 
 const translations: Record<Language, Record<TranslationKey, string>> = {
   en: {
@@ -243,6 +248,11 @@ const translations: Record<Language, Record<TranslationKey, string>> = {
     deckCount: 'Deck',
     drawPile: 'Draw',
     none: 'None',
+    moreGamesUnlockTitle: 'More games',
+    moreGamesPassword: 'Password',
+    moreGamesConfirm: 'Confirm',
+    moreGamesChecking: 'Checking…',
+    moreGamesFailure: 'Unable to unlock a game.',
   },
   zh: {
     appName: 'UNO 家族',
@@ -363,6 +373,11 @@ const translations: Record<Language, Record<TranslationKey, string>> = {
     deckCount: '牌库',
     drawPile: '摸牌',
     none: '无',
+    moreGamesUnlockTitle: '更多游戏',
+    moreGamesPassword: '密码',
+    moreGamesConfirm: '确认',
+    moreGamesChecking: '正在验证…',
+    moreGamesFailure: '无法解锁游戏。',
   },
   de: {
     appName: 'Uno Familie',
@@ -483,6 +498,11 @@ const translations: Record<Language, Record<TranslationKey, string>> = {
     deckCount: 'Deck',
     drawPile: 'Ziehen',
     none: 'Keine',
+    moreGamesUnlockTitle: 'Weitere Spiele',
+    moreGamesPassword: 'Passwort',
+    moreGamesConfirm: 'Bestätigen',
+    moreGamesChecking: 'Wird geprüft…',
+    moreGamesFailure: 'Ein Spiel konnte nicht freigeschaltet werden.',
   },
 }
 

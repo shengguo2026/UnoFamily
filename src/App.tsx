@@ -2,6 +2,8 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { MouseEvent as ReactMouseEvent } from 'react'
 import './App.css'
 import { GameCanvas } from './components/GameCanvas'
+import { MoreGamesTile } from './components/MoreGamesTile'
+import { MoreGamesUnlockModal } from './components/MoreGamesUnlockModal'
 import { MahjongTable3D } from './components/mahjong/MahjongTable3D'
 import { deriveMahjongAnimationTransition } from './components/mahjong/mahjongAnimations'
 import {
@@ -424,6 +426,7 @@ function App() {
   const [winnerCelebration, setWinnerCelebration] = useState<string | null>(null)
   const [audioSettings, setAudioSettings] = useState<AudioSettings>(() => loadAudioSettings())
   const [rulesOpen, setRulesOpen] = useState(false)
+  const [moreGamesOpen, setMoreGamesOpen] = useState(false)
   const [wifiState, setWifiState] = useState<WifiClientState>(initialWifiClientState)
   const [wifiName, setWifiName] = useState('Player')
   const [wifiJoinCode, setWifiJoinCode] = useState('')
@@ -438,6 +441,7 @@ function App() {
   const pendingHostedGameRef = useRef<GameVariant | null>(null)
   const lastAiHardwareWaitKey = useRef<string | null>(null)
   const lastWinnerCelebrationKey = useRef<string | null>(null)
+  const moreGamesTileRef = useRef<HTMLButtonElement | null>(null)
   const [sound] = useState<SoundManager | null>(() => (typeof window !== 'undefined' ? new SoundManager() : null))
   const navigateToScreen = useCallback((nextScreen: AppScreen) => {
     if (nextScreen !== 'table') setAnimationLockReason(null)
@@ -445,6 +449,23 @@ function App() {
   }, [])
   const isBlockingAnimationActive = Boolean(animationLockReason)
   const activeMusicGame = screen === 'table' && state ? state.config.game : config.game
+
+  const closeMoreGames = useCallback(() => {
+    setMoreGamesOpen(false)
+    window.requestAnimationFrame(() => moreGamesTileRef.current?.focus())
+  }, [])
+
+  const selectUnlockedGame = useCallback((gameId: 'quatro') => {
+    if (gameId !== 'quatro') return
+    setMoreGamesOpen(false)
+    setConfig((currentConfig) => ({
+      ...currentConfig,
+      game: 'quatro',
+      playerCount: 2,
+      startingHandSize: 3,
+    }))
+    navigateToScreen('setup')
+  }, [navigateToScreen])
 
   useEffect(() => {
     window.localStorage.setItem('uno-theme', theme)
@@ -1421,8 +1442,17 @@ function App() {
                 </button>
               )
             })}
+            <MoreGamesTile ref={moreGamesTileRef} onOpen={() => setMoreGamesOpen(true)} />
           </div>
         </section>
+      )}
+
+      {screen === 'home' && moreGamesOpen && (
+        <MoreGamesUnlockModal
+          language={language}
+          onCancel={closeMoreGames}
+          onUnlocked={selectUnlockedGame}
+        />
       )}
 
       {screen === 'setup' && (
