@@ -34,6 +34,15 @@ assert.equal(
   true,
   'Quatro should render through its dedicated state path',
 )
+const startGameQuatroBranch = app.slice(
+  app.indexOf("function startGame()"),
+  app.indexOf("if (isMahjongGame(config.game))", app.indexOf("function startGame()")),
+)
+assert.equal(
+  startGameQuatroBranch.includes('setQuatroState(null)'),
+  false,
+  'Starting Quatro must not clear the state before the table renders',
+)
 
 for (const contract of [
   'animationLocked',

@@ -1148,9 +1148,6 @@ function App() {
       setSelectedQuatroTileId(null)
       setState(null)
       gameStateRef.current = null
-      setQuatroState(null)
-      quatroStateRef.current = null
-      setSelectedQuatroTileId(null)
       setMahjongState(null)
       mahjongStateRef.current = null
       setPendingChoice(null)
